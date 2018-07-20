@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import { withTooltip } from '@vx/tooltip'
+import { withTooltip, Tooltip } from '@vx/tooltip'
 import { withParentSize } from '@vx/responsive'
 import { localPoint } from '@vx/event'
 
@@ -71,13 +71,18 @@ const numTicksForWidth = (width) => {
 const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1)
 
 const TimeSeries = ({
+  // withParentSize
+  parentWidth: width,
+  parentHeight: height,
   // withTooltip
   showTooltip,
   hideTooltip,
+  tooltipOpen,
+  tooltipLeft,
+  tooltipTop,
+  tooltipData,
   // required
   data,
-  parentWidth: width,
-  parentHeight: height,
   metric,
   // optional
   showBg,
@@ -271,8 +276,20 @@ const TimeSeries = ({
     )
   )
 
+  const renderTooltip = () => (
+    tooltipOpen && (
+      <Tooltip left={tooltipLeft} top={tooltipTop}>
+        <div>
+          <strong>x:</strong> {tooltipData[0]}
+        </div>
+        <div>
+          <strong>y:</strong> {tooltipData[1]}
+        </div>
+      </Tooltip>
+    )
+  )
 
-  // TODO show generic "can't display"
+  // TODO: better calculation to center text
   if (width < minWidth) {
     return (
       <svg width={width} height={height}>
@@ -307,6 +324,7 @@ const TimeSeries = ({
       {renderGrid()}
       {renderData()}
       {renderAxes()}
+      {renderTooltip()}
     </svg>
   )
 }
