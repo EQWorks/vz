@@ -13,16 +13,24 @@ import { scaleUtc, scaleLinear } from '@vx/scale'
 import { AxisLeft, AxisBottom } from '@vx/axis'
 import { Grid } from '@vx/grid'
 import { extent, max } from 'd3-array'
+import { timeDay } from 'd3-time'
 import moment from 'moment'
 
 const propTypes = {
   // withParentSize
+  parentWidth: PropTypes.number.isRequired,
+  parentHeight: PropTypes.number.isRequired,
   // withTooltip
-  // TODO
+  // showTooltip: PropTypes.func.isRequired,
+  // hideTooltip: ,
+  // tooltipOpen: ,
+  // tooltipLeft: ,
+  // tooltipTop: ,
+  // tooltipData: ,
   // required
   data: PropTypes.array.isRequired,
-  width: PropTypes.number.isRequired,
-  height: PropTypes.number.isRequired,
+  // width: PropTypes.number.isRequired,
+  // height: PropTypes.number.isRequired,
   metric: PropTypes.string.isRequired,
   // optional
   showBg: PropTypes.bool,
@@ -103,10 +111,12 @@ const TimeSeries = ({
   const yMax = height - margin.top - margin.bottom
 
   // scales
+  const xDomain = extent(data, x)
+  const xLength = timeDay.count(xDomain[0], xDomain[1])
   const xScale = scaleUtc({
     rangeRound: [0, xMax],
-    domain: extent(data, x),
-    nice: true,
+    domain: xDomain,
+    // nice: true,
   })
   const yScale = scaleLinear({
     rangeRound: [yMax, 0],
@@ -134,33 +144,31 @@ const TimeSeries = ({
   )
 
   const getBarProps = (d, i) => {
-    // TODO: responsive width
-    const scaleLength = xScale.ticks().length
-    const barWidth = xMax / scaleLength / scaleLength
+    // responsive bar width
+    const width = Math.max(xMax / xLength - 5, 2)
     // x-axis value
-    const xValue = xScale(x(d))
+    let xValue = xScale(x(d))
     // first data point
-    if (i === 0 && y(d)) {
+    if (xValue === 0) {
       return {
-        width: barWidth / 2,
+        width: Math.max(width / 2, 2),
         xValue,
       }
     }
+    // "center" bar on x-tick
+    xValue = xValue - width / 2
     // last data point
     if ((i === data.length - 1) && y(d)) {
       return {
-        width: barWidth / 2,
-        xValue: xValue - barWidth / 2,
+        width: Math.max(width / 2, 2),
+        xValue,
       }
     }
-    return {
-      width: barWidth,
-      xValue: xValue - barWidth / 2,
-    }
+    return { width, xValue }
   }
 
-  const renderBar = () => (
-    data.map((d, i) => {
+  const renderBar = () => {
+    return data.map((d, i) => {
       const barHeight = yMax - yScale(y(d))
       const { width, xValue } = getBarProps(d, i)
       return (
@@ -178,7 +186,7 @@ const TimeSeries = ({
             onMouseLeave={() => (event) => {
               tooltipTimeout = setTimeout(() => {
                 hideTooltip()
-              }, 300) // configurable
+              }, 300) // TODO: configurable
             }}
             onMouseMove={(data) => (event) => {
               if (tooltipTimeout) {
@@ -198,7 +206,7 @@ const TimeSeries = ({
         </Group>
       )
     })
-  )
+  }
 
   const renderLine = () => (
     <LinePath

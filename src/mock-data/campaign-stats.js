@@ -1,13 +1,18 @@
 export default [
   // {
+  //   'date': '1970-01-01',
+  //   'hour': -1,
+  //   'impressions': 3000,
+  // },
+  // {
   //   'date': '2018-01-01',
   //   'hour': -1,
   //   'impressions': 550,
   // },
   // {
-  //   'date': '2018-04-01',
+  //   'date': '2018-06-01',
   //   'hour': -1,
-  //   'impressions': 0,
+  //   'impressions': 1000,
   // },
   {
     'Cost': 3.8377126636535,
@@ -1118,5 +1123,15 @@ export default [
     'date': '2018-07-19',
     'hour': -1,
     'impressions': 800,
+  },
+  {
+    'date': '2018-07-20',
+    'hour': -1,
+    'impressions': 0,
+  },
+  {
+    'date': '2018-07-23',
+    'hour': -1,
+    'impressions': 2512,
   },
 ]

@@ -15,23 +15,15 @@ const data = CampaignStats.filter(
 })
 
 const App = () => (
-  <div style={{ height: '300px' }}>
+  <div>
     <h1>VZ</h1>
-    <TimeSeries
-      data={data}
-      metric='impressions'
-      shape='bar'
-    />
-    <TestTime
-      width={1024}
-      height={500}
-      margin={{
-        left: 100,
-        top: 50,
-        right: 100,
-        bottom: 70,
-      }}
-    />
+    <div style={{ height: '300px' }}>
+      <TimeSeries
+        data={data}
+        metric='impressions'
+        shape='bar'
+      />
+    </div>
   </div>
 )
 
