@@ -22,7 +22,7 @@ export default [
     'clicks': 1,
     'date': '2018-07-01',
     'hour': -1,
-    'impressions': 2956,
+    'impressions': 2956
   },
   {
     'Cost': 0.001374015115,
@@ -1117,21 +1117,21 @@ export default [
   {
     'date': '2018-07-18',
     'hour': -1,
-    'impressions': 100,
+    'impressions': 100
   },
   {
     'date': '2018-07-19',
     'hour': -1,
-    'impressions': 800,
+    'impressions': 800
   },
   {
     'date': '2018-07-20',
     'hour': -1,
-    'impressions': 0,
+    'impressions': 0
   },
   {
     'date': '2018-07-23',
     'hour': -1,
-    'impressions': 2512,
-  },
+    'impressions': 1000
+  }
 ]

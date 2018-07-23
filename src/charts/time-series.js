@@ -1,19 +1,20 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import { withTooltip, Tooltip } from '@vx/tooltip'
+import { withTooltip } from '@vx/tooltip'
 import { withParentSize } from '@vx/responsive'
 import { localPoint } from '@vx/event'
 
 import { PatternLines } from '@vx/pattern'
-import { curveBasis, curveMonotoneX, curveStep } from '@vx/curve'
+import { curveMonotoneX } from '@vx/curve'
 import { AreaClosed, LinePath, Bar } from '@vx/shape'
+import { GlyphDot } from '@vx/glyph'
 import { Group } from '@vx/group'
 import { scaleUtc, scaleLinear } from '@vx/scale'
 import { AxisLeft, AxisBottom } from '@vx/axis'
 import { Grid } from '@vx/grid'
 import { extent, max } from 'd3-array'
-import { timeDay } from 'd3-time'
+import { utcDay, utcHour, utcMinute } from 'd3-time'
 import moment from 'moment'
 
 const propTypes = {
@@ -31,14 +32,15 @@ const propTypes = {
   data: PropTypes.array.isRequired,
   // width: PropTypes.number.isRequired,
   // height: PropTypes.number.isRequired,
-  metric: PropTypes.string.isRequired,
+  metrics: PropTypes.string.isRequired,
   // optional
   showBg: PropTypes.bool,
   showGrid: PropTypes.bool,
   margin: PropTypes.object,
-  fillGap: PropTypes.bool,
+  // fillGap: PropTypes.bool,
   shape: PropTypes.string,
   minWidth: PropTypes.number,
+  interval: PropTypes.string
 }
 
 const defaultProps = {
@@ -48,11 +50,12 @@ const defaultProps = {
     left: 100,
     top: 50,
     right: 100,
-    bottom: 50,
+    bottom: 50
   },
-  fillGap: false,
+  // fillGap: false,
   shape: 'bar',
   minWidth: 500,
+  interval: 'daily'
 }
 
 // responsive utils for axis ticks
@@ -76,6 +79,12 @@ const numTicksForWidth = (width) => {
   return 10
 }
 
+const getTimeRange = (start, end, interval) => ([...({
+  daily: utcDay,
+  hourly: utcHour,
+  minutely: utcMinute
+}[interval] || utcDay).range(start, end), end])
+
 const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1)
 
 const TimeSeries = ({
@@ -83,28 +92,29 @@ const TimeSeries = ({
   parentWidth: width,
   parentHeight: height,
   // withTooltip
-  showTooltip,
-  hideTooltip,
-  tooltipOpen,
-  tooltipLeft,
-  tooltipTop,
-  tooltipData,
+  // showTooltip,
+  // hideTooltip,
+  // tooltipOpen,
+  // tooltipLeft,
+  // tooltipTop,
+  // tooltipData,
   // required
   data,
-  metric,
+  metrics,
   // optional
   showBg,
   showGrid,
   margin,
-  fillGap,
+  // fillGap,
   shape,
   minWidth,
+  interval
 }) => {
   let tooltipTimeout
 
   // accessors
   const x = d => d.date
-  const y = d => d[metric]
+  const y = d => (d[metrics] || 0)
 
   // bounds
   const xMax = width - margin.left - margin.right
@@ -112,22 +122,22 @@ const TimeSeries = ({
 
   // scales
   const xDomain = extent(data, x)
-  const xLength = timeDay.count(xDomain[0], xDomain[1])
+  const xRange = getTimeRange(xDomain[0], xDomain[1], interval)
   const xScale = scaleUtc({
     rangeRound: [0, xMax],
-    domain: xDomain,
+    domain: xDomain
     // nice: true,
   })
   const yScale = scaleLinear({
     rangeRound: [yMax, 0],
     domain: [0, max(data, y)],
-    nice: true,
+    nice: true
   })
 
-  const fillZero = () => xScale.ticks().map((tick) => (
-    data.find((item) => item.date.isSame(moment(tick))) || {
-      date: tick,
-      [metric]: 0,
+  const fillZero = () => xRange.map((date) => (
+    data.find((item) => item.date.isSame(moment(date))) || {
+      date,
+      [metrics]: 0
     }
   ))
 
@@ -145,14 +155,14 @@ const TimeSeries = ({
 
   const getBarProps = (d, i) => {
     // responsive bar width
-    const width = Math.max(xMax / xLength - 5, 2)
+    const width = Math.max(xMax / (xRange.length || 1) - 5, 2)
     // x-axis value
     let xValue = xScale(x(d))
     // first data point
     if (xValue === 0) {
       return {
         width: Math.max(width / 2, 2),
-        xValue,
+        xValue
       }
     }
     // "center" bar on x-tick
@@ -161,7 +171,7 @@ const TimeSeries = ({
     if ((i === data.length - 1) && y(d)) {
       return {
         width: Math.max(width / 2, 2),
-        xValue,
+        xValue
       }
     }
     return { width, xValue }
@@ -183,9 +193,10 @@ const TimeSeries = ({
             stroke={'teal'}
             strokeWidth={0.1}
             data={{ x: x(d), y: y(d) }}
-            onMouseLeave={() => (event) => {
+            onMouseLeave={() => () => {
               tooltipTimeout = setTimeout(() => {
-                hideTooltip()
+                // hideTooltip()
+                console.log('hide tooltip')
               }, 300) // TODO: configurable
             }}
             onMouseMove={(data) => (event) => {
@@ -196,9 +207,9 @@ const TimeSeries = ({
               const tooltip = {
                 tooltipLeft: coords.x,
                 tooltipTop: coords.y,
-                tooltipData: data,
+                tooltipData: data
               }
-              showTooltip(tooltip)
+              // showTooltip(tooltip)
 
               console.log(tooltip)
             }}
@@ -218,29 +229,45 @@ const TimeSeries = ({
       stroke={'teal'}
       strokeWidth={1}
       curve={curveMonotoneX}
+      glyph={(d,i) => {
+        return (
+          <g key={`line-point-${i}`}>
+            <GlyphDot
+              cx={xScale(x(d))}
+              cy={yScale(y(d))}
+              r={y(d) ? 3 : 1}
+              fill='teal'
+              fillOpacity={y(d) ? 0.7 : 0.3}
+            />
+          </g>
+        )
+      }}
     />
   )
 
   const renderArea = () => (
-    <AreaClosed
-      data={fillZero()}
-      xScale={xScale}
-      yScale={yScale}
-      x={x}
-      y={y}
-      fill='teal'
-      fillOpacity={0.3}
-      stroke={'teal'}
-      strokeWidth={0.1}
-      curve={curveMonotoneX}
-    />
+    <Group>
+      {renderLine()}
+      <AreaClosed
+        data={fillZero()}
+        xScale={xScale}
+        yScale={yScale}
+        x={x}
+        y={y}
+        fill='teal'
+        fillOpacity={0.3}
+        stroke={'transparent'}
+        strokeWidth={0}
+        curve={curveMonotoneX}
+      />
+    </Group>
   )
 
   const renderShape = () => (
     {
       bar: renderBar,
       line: renderLine,
-      area: renderArea,
+      area: renderArea
     }[shape] || renderBar // default bar
   )()
 
@@ -257,7 +284,7 @@ const TimeSeries = ({
         left={0}
         scale={yScale}
         numTicks={numTicksForHeight(height)}
-        label={capitalize(metric)}
+        label={capitalize(metrics)}
       />
       <AxisBottom
         top={height - margin.top}
@@ -284,18 +311,18 @@ const TimeSeries = ({
     )
   )
 
-  const renderTooltip = () => (
-    tooltipOpen && (
-      <Tooltip left={tooltipLeft} top={tooltipTop}>
-        <div>
-          <strong>x:</strong> {tooltipData[0]}
-        </div>
-        <div>
-          <strong>y:</strong> {tooltipData[1]}
-        </div>
-      </Tooltip>
-    )
-  )
+  // const renderTooltip = () => (
+  //   tooltipOpen && (
+  //     <Tooltip left={tooltipLeft} top={tooltipTop}>
+  //       <div>
+  //         <strong>x:</strong> {tooltipData[0]}
+  //       </div>
+  //       <div>
+  //         <strong>y:</strong> {tooltipData[1]}
+  //       </div>
+  //     </Tooltip>
+  //   )
+  // )
 
   // TODO: better calculation to center text
   if (width < minWidth) {
@@ -332,7 +359,6 @@ const TimeSeries = ({
       {renderGrid()}
       {renderData()}
       {renderAxes()}
-      {renderTooltip()}
     </svg>
   )
 }
