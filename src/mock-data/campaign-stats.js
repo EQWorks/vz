@@ -1133,5 +1133,10 @@ export default [
     'date': '2018-07-23',
     'hour': -1,
     'impressions': 1000
+  },
+  {
+    'date': '2018-07-24',
+    'hour': -1,
+    'impressions': 3321
   }
 ]

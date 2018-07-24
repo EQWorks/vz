@@ -7,11 +7,9 @@ module.exports = {
     "eslint:recommended",
     "plugin:react/recommended",
   ],
+  "parser": "babel-eslint",
   "parserOptions": {
     ecmaVersion: 6,
-    "ecmaFeatures": {
-      "jsx": true
-    },
     "sourceType": "module",
   },
   "plugins": [
@@ -38,5 +36,8 @@ module.exports = {
       "error",
       "never",
     ],
+    "no-console": [
+      "warn"
+    ]
   },
 }

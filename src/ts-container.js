@@ -26,7 +26,7 @@ class TimeSeriesContainer extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      interval: 'daily',
+      interval: 'daily'
     }
   }
 
@@ -46,6 +46,22 @@ class TimeSeriesContainer extends React.Component {
             data={interval === 'daily' ? dailyData : hourlyData}
             metrics='impressions'
             shape='bar'
+            interval={interval}
+          />
+        </div>
+        <div style={{ height: '255px' }}>
+          <TimeSeries
+            data={interval === 'daily' ? dailyData : hourlyData}
+            metrics='impressions'
+            shape='area'
+            interval={interval}
+          />
+        </div>
+        <div style={{ height: '255px' }}>
+          <TimeSeries
+            data={interval === 'daily' ? dailyData : hourlyData}
+            metrics='impressions'
+            shape='line'
             interval={interval}
           />
         </div>

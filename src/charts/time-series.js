@@ -112,9 +112,12 @@ const TimeSeries = ({
 }) => {
   let tooltipTimeout
 
+  const today = moment.utc().startOf('day')
+
   // accessors
   const x = d => d.date
   const y = d => (d[metrics] || 0)
+  const color = d => moment(x(d)).startOf('day').isSame(today) ? 'Teal' : 'LightSkyBlue'
 
   // bounds
   const xMax = width - margin.left - margin.right
@@ -188,10 +191,10 @@ const TimeSeries = ({
             height={barHeight}
             x={xValue}
             y={yMax - barHeight}
-            fill='teal'
+            fill={color(d)}
             fillOpacity={0.3}
-            stroke={'teal'}
-            strokeWidth={0.1}
+            stroke={color(d)}
+            strokeWidth={0.7}
             data={{ x: x(d), y: y(d) }}
             onMouseLeave={() => () => {
               tooltipTimeout = setTimeout(() => {
@@ -226,7 +229,7 @@ const TimeSeries = ({
       yScale={yScale}
       x={x}
       y={y}
-      stroke={'teal'}
+      stroke='LightSkyBlue'
       strokeWidth={1}
       curve={curveMonotoneX}
       glyph={(d,i) => {
@@ -236,7 +239,7 @@ const TimeSeries = ({
               cx={xScale(x(d))}
               cy={yScale(y(d))}
               r={y(d) ? 3 : 1}
-              fill='teal'
+              fill={color(d)}
               fillOpacity={y(d) ? 0.7 : 0.3}
             />
           </g>
@@ -254,9 +257,9 @@ const TimeSeries = ({
         yScale={yScale}
         x={x}
         y={y}
-        fill='teal'
+        fill='LightSkyBlue'
         fillOpacity={0.3}
-        stroke={'transparent'}
+        stroke='transparent'
         strokeWidth={0}
         curve={curveMonotoneX}
       />
