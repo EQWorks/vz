@@ -1,7 +1,7 @@
 import React from 'react'
 import moment from 'moment'
 
-import TimeSeries from './charts/time-series'
+import TimeSeries from './visualizations/time-series'
 import CampaignStats from './mock-data/campaign-stats'
 
 const dailyData = CampaignStats.filter(
@@ -26,42 +26,46 @@ class TimeSeriesContainer extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      interval: 'daily'
+      interval: 'daily',
+      shape: 'bar'
     }
   }
 
-  onClick = (interval) => () => {
+  handleInterval = (interval) => () => {
     this.setState({ interval })
   }
 
+  handleShape = (shape) => () => {
+    this.setState({ shape })
+  }
+
   render() {
-    const { interval } = this.state
+    const {
+      interval,
+      shape
+    } = this.state
 
     return (
       <div>
-        <button onClick={this.onClick('daily')}>daily</button>
-        <button onClick={this.onClick('hourly')}>hourly</button>
-        <div style={{ height: '255px' }}>
-          <TimeSeries
-            data={interval === 'daily' ? dailyData : hourlyData}
-            metrics='impressions'
-            shape='bar'
-            interval={interval}
-          />
+        <div style={{ float: 'left' }}>
+          {['daily', 'hourly'].map((interval) => (
+            <button key={interval} onClick={this.handleInterval(interval)}>
+              {interval}
+            </button>
+          ))}
         </div>
-        <div style={{ height: '255px' }}>
-          <TimeSeries
-            data={interval === 'daily' ? dailyData : hourlyData}
-            metrics='impressions'
-            shape='area'
-            interval={interval}
-          />
+        <div style={{ float: 'right' }}>
+          {['bar', 'area', 'line'].map((shape) => (
+            <button key={shape} onClick={this.handleShape(shape)}>
+              {shape}
+            </button>
+          ))}
         </div>
-        <div style={{ height: '255px' }}>
+        <div style={{ height: '345', clear: 'both' }}>
           <TimeSeries
             data={interval === 'daily' ? dailyData : hourlyData}
             metrics='impressions'
-            shape='line'
+            shape={shape}
             interval={interval}
           />
         </div>
