@@ -53,10 +53,10 @@ const LineArea = ({
   )
 
   return (
-    <g>
+    <React.Fragment>
       {renderLine()}
       {showArea && renderArea()}
-    </g>
+    </React.Fragment>
   )
 }
 

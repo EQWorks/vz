@@ -12,7 +12,7 @@ const Axes = ({
   bottom,
   // right,
 }) => (
-  <g>
+  <React.Fragment>
     {showGrid && (
       <Grid
         xScale={bottom.scale}
@@ -37,7 +37,7 @@ const Axes = ({
       numTicks={bottom.numTicks}
       label={bottom.label}
     />
-  </g>
+  </React.Fragment>
 )
 
 Axes.propTypes = {

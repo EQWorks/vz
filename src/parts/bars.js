@@ -29,7 +29,7 @@ const Bars = ({
       width = Math.max(width / 2, 2)
       // shift to right side of left y-axis
       x += width
-    } else if (x === xMax - width / 2) {
+    } else if (x === xMax - barWidth / 2) {
       // last data point
       // half of regular width
       width = Math.max(width / 2, 2)
@@ -46,7 +46,7 @@ const Bars = ({
     }
   }
   return (
-    <g>
+    <React.Fragment>
       {data.map((d, i) => {
         const {
           width,
@@ -69,7 +69,7 @@ const Bars = ({
           />
         )
       })}
-    </g>
+    </React.Fragment>
   )
 }
 
