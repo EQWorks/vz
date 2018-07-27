@@ -168,35 +168,37 @@ const TimeSeries = ({
     />
   )
 
+  const handleTooltip = ({ data, event }) => {
+      const point = localPoint(event)
+      const xDomain = xScale.invert(point.x - margin.left)
+      const index = bisectDate(data, xDomain, 1)
+      const dLeft = data[index - 1]
+      const dRight = data[index]
+      let d = dLeft
+      if (dRight && dRight.date) {
+        d = xDomain - (new Date(dLeft.date)) > (new Date(dRight.date)) - xDomain ? dRight : dLeft
+      }
+      // // tooltip with mouse coords
+      // const tip = {
+      //   tooltipData: d,
+      //   tooltipLeft: point.x - margin.left,
+      //   tooltipTop: point.y - margin.top,
+      // }
+      // tooltip with data "snapping" coords
+      const tip = {
+        tooltipData: d,
+        tooltipLeft: xScale(d.date),
+        tooltipTop: yScale(d[metrics]),
+      }
+      showTooltip(tip)
+    }
+
   const renderTooltipTrigger = () => (
     <HotZone
       width={xMax}
       height={yMax}
       data={fillZero()}
-      onMouseMove={(data) => (event) => {
-        const point = localPoint(event)
-        const xDomain = xScale.invert(point.x - margin.left)
-        const index = bisectDate(data, xDomain, 1)
-        const dLeft = data[index - 1]
-        const dRight = data[index]
-        let d = dLeft
-        if (dRight && dRight.date) {
-          d = xDomain - (new Date(dLeft.date)) > (new Date(dRight.date)) - xDomain ? dRight : dLeft
-        }
-        // // tooltip with mouse coords
-        // const tip = {
-        //   tooltipData: d,
-        //   tooltipLeft: point.x - margin.left,
-        //   tooltipTop: point.y - margin.top,
-        // }
-        // tooltip with data "snapping" coords
-        const tip = {
-          tooltipData: d,
-          tooltipLeft: xScale(d.date),
-          tooltipTop: yScale(d[metrics]),
-        }
-        showTooltip(tip)
-      }}
+      onMouseMove={(data) => (event) => handleTooltip({ data, event })}
       onMouseLeave={() => () => { hideTooltip() }}
     />
   )
@@ -206,7 +208,7 @@ const TimeSeries = ({
       <React.Fragment key={Math.random()}>
         <TooltipWithBounds
           top={yMax + margin.top}
-          left={tooltipLeft}
+          left={tooltipLeft + margin.left}
         >
           {moment.utc(tooltipData.date).format('ddd, LL')}
           {tooltipData[metrics] === 0 && (
@@ -217,8 +219,8 @@ const TimeSeries = ({
         </TooltipWithBounds>
         {tooltipData[metrics] > 0 && (
           <TooltipWithBounds
-            top={tooltipTop + margin.top / 5}
-            left={tooltipLeft + margin.left - xMax / (xRange.length || 1) + 5 }
+            top={tooltipTop}
+            left={tooltipLeft + margin.left}
             style={{
               color: color(tooltipData)
             }}
@@ -233,7 +235,6 @@ const TimeSeries = ({
   const renderMarkers = () => (
     tooltipOpen && (
       <Markers
-        showVertical={shape !== 'bar'}
         x={tooltipLeft}
         y={tooltipTop}
         xMax={xMax}
