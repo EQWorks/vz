@@ -12,7 +12,7 @@ const LineArea = ({
   yGetter,
   xScale,
   yScale,
-  color
+  colorFunc,
 }) => {
   const renderLine = () => (
     <LinePath
@@ -21,16 +21,16 @@ const LineArea = ({
       yScale={yScale}
       x={xGetter}
       y={yGetter}
-      stroke={color()}
+      stroke={colorFunc()}
       strokeWidth={1}
       curve={curveMonotoneX}
-      glyph={(d,i) => (
+      glyph={(d, i) => (
         <GlyphDot
           key={`line-point-${i}`}
           cx={xScale(xGetter(d))}
           cy={yScale(yGetter(d))}
           r={yGetter(d) ? 3 : 1}
-          fill={color(d)}
+          fill={colorFunc(d)}
           fillOpacity={yGetter(d) ? 0.7 : 0.3}
         />
       )}
@@ -44,9 +44,9 @@ const LineArea = ({
       yScale={yScale}
       x={xGetter}
       y={yGetter}
-      fill={color()}
+      fill={colorFunc()}
       fillOpacity={0.3}
-      stroke='transparent'
+      stroke="transparent"
       strokeWidth={0}
       curve={curveMonotoneX}
     />
@@ -66,11 +66,11 @@ LineArea.propTypes = {
   yGetter: PropTypes.func.isRequired,
   xScale: PropTypes.func.isRequired,
   yScale: PropTypes.func.isRequired,
-  color: PropTypes.func.isRequired,
-  showArea: PropTypes.bool
+  colorFunc: PropTypes.func.isRequired,
+  showArea: PropTypes.bool,
 }
 LineArea.defaultProps = {
-  showArea: true
+  showArea: true,
 }
 
 export default LineArea

@@ -5,7 +5,7 @@ import TimeSeries from './visualizations/time-series'
 import CampaignStats from './mock-data/campaign-stats'
 
 const dailyData = CampaignStats.filter(
-  (point) => point.hour === -1
+  point => point.hour === -1
 ).map((point) => {
   const copy = { ...point }
   copy.date = moment.utc(point.date)
@@ -14,7 +14,7 @@ const dailyData = CampaignStats.filter(
 })
 
 const hourlyData = CampaignStats.filter(
-  (point) => point.hour !== -1
+  point => point.hour !== -1
 ).map((point) => {
   const copy = { ...point }
   copy.date = moment.utc(`${point.date}T${String(point.hour).padStart(2, '0')}:00:00`)
@@ -27,35 +27,35 @@ class TimeSeriesContainer extends React.Component {
     super(props)
     this.state = {
       interval: 'daily',
-      shape: 'bar'
+      shape: 'bar',
     }
   }
 
-  handleInterval = (interval) => () => {
+  handleInterval = interval => () => {
     this.setState({ interval })
   }
 
-  handleShape = (shape) => () => {
+  handleShape = shape => () => {
     this.setState({ shape })
   }
 
   render() {
     const {
       interval,
-      shape
+      shape,
     } = this.state
 
     return (
       <div>
         <div style={{ float: 'left' }}>
-          {['daily', 'hourly'].map((interval) => (
+          {['daily', 'hourly'].map(interval => (
             <button key={interval} onClick={this.handleInterval(interval)}>
               {interval}
             </button>
           ))}
         </div>
         <div style={{ float: 'right' }}>
-          {['bar', 'area', 'line'].map((shape) => (
+          {['bar', 'area', 'line'].map(shape => (
             <button key={shape} onClick={this.handleShape(shape)}>
               {shape}
             </button>
@@ -64,7 +64,7 @@ class TimeSeriesContainer extends React.Component {
         <div style={{ height: '345', clear: 'both' }}>
           <TimeSeries
             data={interval === 'daily' ? dailyData : hourlyData}
-            metrics='impressions'
+            metrics="impressions"
             shape={shape}
             interval={interval}
           />

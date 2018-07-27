@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 const Background = ({
   width,
-  height
+  height,
 }) => (
   <rect
     x={0}
@@ -15,7 +15,7 @@ const Background = ({
 
 Background.propTypes = {
   width: PropTypes.number.isRequired,
-  height: PropTypes.number.isRequired
+  height: PropTypes.number.isRequired,
 }
 
 export default Background

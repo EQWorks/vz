@@ -12,25 +12,24 @@ const Bars = ({
   yGetter,
   xScale,
   yScale,
-  color
+  colorFunc,
 }) => {
   // TODO: memoize this?
   const getBarProps = (d) => {
     // y-axis value
-    const y = yGetter(d)
-    const yValue = yScale(y)
+    const y = yScale(yGetter(d))
     // x-axis value, centered on tick
-    let xValue = xScale(xGetter(d)) - barWidth / 2
+    let x = xScale(xGetter(d)) - barWidth / 2
     // bar width
     let width = barWidth
 
-    if (xValue < 0) {
+    if (x < 0) {
       // first data point
       // half of regular width
       width = Math.max(width / 2, 2)
       // shift to right side of left y-axis
-      xValue = xValue + width
-    } else if (xValue === xMax - width / 2) {
+      x += width
+    } else if (x === xMax - width / 2) {
       // last data point
       // half of regular width
       width = Math.max(width / 2, 2)
@@ -40,25 +39,32 @@ const Bars = ({
 
     return {
       width,
-      xValue,
-      yValue
+      height: yMax - y,
+      x,
+      y,
+      color: colorFunc(d),
     }
   }
   return (
     <g>
-      {data.map((d) => {
-        const { width, xValue, yValue } = getBarProps(d)
-        const barHeight = yMax - yValue
+      {data.map((d, i) => {
+        const {
+          width,
+          height,
+          x,
+          y,
+          color,
+        } = getBarProps(d)
         return (
           <Bar
-            key={`bar-${xGetter(d)}`}
+            key={`bar-${i}`}
             width={width}
-            height={barHeight}
-            x={xValue}
-            y={yValue}
-            fill={color(d)}
+            height={height}
+            x={x}
+            y={y}
+            fill={color}
             fillOpacity={0.3}
-            stroke={color(d)}
+            stroke={color}
             strokeWidth={0.7}
           />
         )
@@ -76,7 +82,7 @@ Bars.propTypes = {
   yGetter: PropTypes.func.isRequired,
   xScale: PropTypes.func.isRequired,
   yScale: PropTypes.func.isRequired,
-  color: PropTypes.func.isRequired
+  colorFunc: PropTypes.func.isRequired,
 }
 
 export default Bars

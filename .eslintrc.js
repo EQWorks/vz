@@ -38,6 +38,10 @@ module.exports = {
     ],
     "no-console": [
       "warn"
-    ]
+    ],
+    "comma-dangle": [
+      "error",
+      "only-multiline"
+    ],
   },
 }

@@ -9,7 +9,7 @@ const Axes = ({
   xMax,
   yMax,
   left,
-  bottom
+  bottom,
   // right,
 }) => (
   <g>
@@ -45,13 +45,13 @@ Axes.propTypes = {
   xMax: PropTypes.number,
   yMax: PropTypes.number,
   left: PropTypes.object.isRequired,
-  bottom: PropTypes.object.isRequired
+  bottom: PropTypes.object.isRequired,
   // right: PropTypes.object,
 }
 Axes.defaultProps = {
   showGrid: true,
   xMax: 0,
-  yMax: 0
+  yMax: 0,
 }
 
 export default Axes

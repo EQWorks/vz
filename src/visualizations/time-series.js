@@ -21,7 +21,7 @@ const numTicksForHeight = (height) => {
   if (height <= 300) {
     return 3
   }
-  if (300 < height && height <= 600) {
+  if (height > 300 && height <= 600) {
     return 5
   }
   return 10
@@ -31,7 +31,7 @@ const numTicksForWidth = (width) => {
   if (width <= 300) {
     return 2
   }
-  if (300 < width && width <= 400) {
+  if (width > 300 && width <= 400) {
     return 5
   }
   return 10
@@ -40,10 +40,10 @@ const numTicksForWidth = (width) => {
 const getTimeRange = (start, end, interval) => ([...({
   daily: utcDay,
   hourly: utcHour,
-  minutely: utcMinute
+  minutely: utcMinute,
 }[interval] || utcDay).range(start, end), end])
 
-const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1)
+const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1)
 
 const TimeSeries = ({
   // withParentSize
@@ -66,14 +66,14 @@ const TimeSeries = ({
   // fillGap,
   shape,
   minWidth,
-  interval
+  interval,
 }) => {
   const today = moment.utc().startOf('day')
 
   // accessors
   const x = d => d.date
   const y = d => (d[metrics] || 0)
-  const color = d => d && moment(x(d)).startOf('day').isSame(today) ? 'Teal' : 'LightSkyBlue'
+  const color = d => (d && moment(x(d)).startOf('day').isSame(today) ? 'Teal' : 'LightSkyBlue')
 
   // bounds
   const xMax = width - margin.left - margin.right
@@ -84,19 +84,19 @@ const TimeSeries = ({
   const xRange = getTimeRange(xDomain[0], xDomain[1], interval)
   const xScale = scaleUtc({
     rangeRound: [0, xMax],
-    domain: xDomain
+    domain: xDomain,
     // nice: true,
   })
   const yScale = scaleLinear({
     rangeRound: [yMax, 0],
     domain: [0, max(data, y)],
-    nice: true
+    nice: true,
   })
 
-  const fillZero = () => xRange.map((date) => (
-    data.find((item) => item.date.isSame(moment(date))) || {
+  const fillZero = () => xRange.map(date => (
+    data.find(item => item.date.isSame(moment(date))) || {
       date,
-      [metrics]: 0
+      [metrics]: 0,
     }
   ))
 
@@ -120,11 +120,11 @@ const TimeSeries = ({
       yGetter={y}
       xScale={xScale}
       yScale={yScale}
-      color={color}
+      colorFunc={color}
     />
   )
 
-  const renderLineArea = (shape) => (
+  const renderLineArea = shape => (
     <LineArea
       showArea={shape === 'area'}
       data={fillZero()}
@@ -132,7 +132,7 @@ const TimeSeries = ({
       yGetter={y}
       xScale={xScale}
       yScale={yScale}
-      color={color}
+      colorFunc={color}
     />
   )
 
@@ -143,34 +143,26 @@ const TimeSeries = ({
     return renderLineArea(shape)
   }
 
-  const renderData = () => (
-    <Group top={margin.top} left={margin.left}>
-      {renderShape()}
-    </Group>
-  )
-
   const renderAxes = () => (
-    <Group left={margin.left} top={margin.top}>
-      <Axes
-        showGrid={showGrid}
-        xMax={xMax}
-        yMax={yMax}
-        left={{
-          top: 0,
-          left: 0,
-          scale: yScale,
-          numTicks: numTicksForHeight(height),
-          label: capitalize(metrics)
-        }}
-        bottom={{
-          top: height - margin.top * 2,
-          left: 0,
-          scale: xScale,
-          numTicks: numTicksForWidth(width),
-          label: 'Time'
-        }}
-      />
-    </Group>
+    <Axes
+      showGrid={showGrid}
+      xMax={xMax}
+      yMax={yMax}
+      left={{
+        top: 0,
+        left: 0,
+        scale: yScale,
+        numTicks: numTicksForHeight(height),
+        label: capitalize(metrics),
+      }}
+      bottom={{
+        top: height - margin.top * 2,
+        left: 0,
+        scale: xScale,
+        numTicks: numTicksForWidth(width),
+        label: 'Time',
+      }}
+    />
   )
 
   if (width < minWidth) {
@@ -184,9 +176,11 @@ const TimeSeries = ({
 
   return (
     <svg width={width} height={height}>
+      <Group left={margin.left} top={margin.top}>
+        {renderAxes()}
+        {renderShape()}
+      </Group>
       {renderBackground()}
-      {renderAxes()}
-      {renderData()}
     </svg>
   )
 }
@@ -214,7 +208,7 @@ TimeSeries.propTypes = {
   // fillGap: PropTypes.bool,
   shape: PropTypes.string,
   minWidth: PropTypes.number,
-  interval: PropTypes.string
+  interval: PropTypes.string,
 }
 
 TimeSeries.defaultProps = {
@@ -224,12 +218,12 @@ TimeSeries.defaultProps = {
     left: 100,
     top: 50,
     right: 100,
-    bottom: 50
+    bottom: 50,
   },
   // fillGap: false,
   shape: 'bar',
   minWidth: 600,
-  interval: 'daily'
+  interval: 'daily',
 }
 
 export default withParentSize(withTooltip(TimeSeries))
