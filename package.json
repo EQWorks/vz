@@ -4,14 +4,16 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "React + D3 (through vx) visualization components",
   "scripts": {
     "start": "parcel demo/index.html",
-    "build": "microbundle -o publish/",
+    "build": "rimraf publish && parcel build src/index.js --out-dir publish",
     "lint": "eslint -c .eslintrc.js --ext .js src/",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublishOnly": "npm run build"
   },
+  "main": "publish/index.js",
   "source": "src/index.js",
   "files": [
     "publish",
@@ -34,9 +36,12 @@
     "babel-runtime": "^6.26.0",
     "eslint": "^5.1.0",
     "eslint-plugin-react": "^7.10.0",
-    "microbundle": "^0.6.0",
     "parcel-bundler": "^1.9.7",
     "prop-types": "^15.6.2",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1"
+  },
+  "peerDependencies": {
     "react": "^16.4.1",
     "react-dom": "^16.4.1"
   },
