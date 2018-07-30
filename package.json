@@ -4,7 +4,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "React + D3 (through vx) visualization components",
   "scripts": {
     "start": "parcel demo/index.html",
@@ -25,6 +25,10 @@
     "d3",
     "vx"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/EQWorks/vz"
+  },
   "author": "Runzhou Li (Leo)",
   "devDependencies": {
     "@vx/mock-data": "latest",
