@@ -11,7 +11,8 @@
   },
   "source": "src/index.js",
   "files": [
-    "publish"
+    "publish",
+    "README.md"
   ],
   "keywords": [
     "visualizations",
