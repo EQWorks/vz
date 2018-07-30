@@ -1,6 +1,9 @@
 {
   "name": "@eqworks/vz",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "version": "0.1.0",
   "description": "React + D3 (through vx) visualization components",
   "scripts": {
