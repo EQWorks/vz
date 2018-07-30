@@ -1,14 +1,25 @@
 {
-  "name": "vz",
-  "version": "1.0.0",
-  "description": "",
+  "name": "@eqworks/vz",
+  "license": "MIT",
+  "version": "0.1.0",
+  "description": "React + D3 (through vx) visualization components",
   "scripts": {
-    "start": "parcel index.html",
+    "start": "parcel demo/index.html",
+    "build": "microbundle -o publish/",
     "lint": "eslint -c .eslintrc.js --ext .js src/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "source": "src/index.js",
+  "files": [
+    "publish"
+  ],
+  "keywords": [
+    "visualizations",
+    "charts",
+    "d3",
+    "vx"
+  ],
+  "author": "Runzhou Li (Leo)",
   "devDependencies": {
     "@vx/mock-data": "latest",
     "babel-core": "^6.26.3",
@@ -19,7 +30,7 @@
     "babel-runtime": "^6.26.0",
     "eslint": "^5.1.0",
     "eslint-plugin-react": "^7.10.0",
-    "moment": "^2.22.2",
+    "microbundle": "^0.6.0",
     "parcel-bundler": "^1.9.7",
     "prop-types": "^15.6.2",
     "react": "^16.4.1",

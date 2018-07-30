@@ -10,12 +10,14 @@ import { extent, max, bisector } from 'd3-array'
 import { utcDay, utcHour, utcMinute } from 'd3-time'
 import moment from 'moment'
 
-import NoSpace from '../parts/no-space'
-import Axes from '../parts/axes'
-import Markers from '../parts/markers'
-import HotZone from '../parts/hot-zone'
-import Bars from '../parts/bars'
-import LineArea from '../parts/line-area'
+import {
+  NoSpace,
+  Axes,
+  Markers,
+  HotZone,
+  Bars,
+  LineArea,
+} from '../parts'
 
 // responsive utils for axis ticks
 const numTicksForHeight = (height) => {

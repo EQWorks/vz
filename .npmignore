@@ -1,0 +1,12 @@
+src/
+demo/
+dist/
+
+.cache/
+node_modules/
+
+.babelrc
+.eslintrc.js
+.gitignore
+package.json
+package-lock.json
