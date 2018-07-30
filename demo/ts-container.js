@@ -1,7 +1,7 @@
 import React from 'react'
 import moment from 'moment'
 
-import TimeSeries from './visualizations/time-series'
+import TimeSeries from '../src/visualizations/time-series'
 import CampaignStats from './mock-data/campaign-stats'
 
 const dailyData = CampaignStats.filter(

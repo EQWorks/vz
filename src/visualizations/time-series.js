@@ -11,7 +11,6 @@ import { utcDay, utcHour, utcMinute } from 'd3-time'
 import moment from 'moment'
 
 import NoSpace from '../parts/no-space'
-import Background from '../parts/background'
 import Axes from '../parts/axes'
 import Markers from '../parts/markers'
 import HotZone from '../parts/hot-zone'
@@ -102,16 +101,6 @@ const TimeSeries = ({
     domain: [0, max(data, yGetter)],
     nice: true,
   })
-
-  // TODO: background options
-  const renderBackground = () => (
-    showBg && (
-      <Background
-        width={width}
-        height={height}
-      />
-    )
-  )
 
   const renderBars = () => (
     <Bars
@@ -261,7 +250,6 @@ const TimeSeries = ({
           {renderShape()}
           {renderTooltipTrigger()}
         </Group>
-        {renderBackground()}
       </svg>
       {renderTooltip()}
     </React.Fragment>
