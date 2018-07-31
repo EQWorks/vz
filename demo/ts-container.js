@@ -28,38 +28,49 @@ class TimeSeriesContainer extends React.Component {
     this.state = {
       interval: 'daily',
       shape: 'bar',
+      snapTooltip: true,
     }
   }
 
-  handleInterval = interval => () => {
+  handleInterval = (interval) => () => {
     this.setState({ interval })
   }
 
-  handleShape = shape => () => {
+  handleShape = (shape) => () => {
     this.setState({ shape })
+  }
+
+  toggleSnapTooltip = (snapTooltip) => () => {
+    this.setState({ snapTooltip: !snapTooltip })
   }
 
   render() {
     const {
       interval,
       shape,
+      snapTooltip,
     } = this.state
 
     return (
       <div>
-        <div style={{ float: 'left' }}>
+        <div>
           {['daily', 'hourly'].map(interval => (
             <button key={interval} onClick={this.handleInterval(interval)}>
               {interval}
             </button>
           ))}
         </div>
-        <div style={{ float: 'right' }}>
+        <div>
           {['bar', 'area', 'line'].map(shape => (
             <button key={shape} onClick={this.handleShape(shape)}>
               {shape}
             </button>
           ))}
+        </div>
+        <div>
+          <button onClick={this.toggleSnapTooltip(snapTooltip)}>
+            tooltip {snapTooltip ? 'snapping ' : 'loose'}
+          </button>
         </div>
         <div style={{ height: '345', clear: 'both' }}>
           <TimeSeries
@@ -67,6 +78,7 @@ class TimeSeriesContainer extends React.Component {
             metrics="impressions"
             shape={shape}
             interval={interval}
+            snapTooltip={snapTooltip}
           />
         </div>
       </div>

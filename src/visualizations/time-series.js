@@ -63,10 +63,9 @@ const TimeSeries = ({
   data,
   metrics,
   // optional
-  showBg,
   showGrid,
   margin,
-  // fillGap,
+  snapTooltip,
   shape,
   minWidth,
   interval,
@@ -160,29 +159,28 @@ const TimeSeries = ({
   )
 
   const handleTooltip = ({ data, event }) => {
-      const point = localPoint(event)
-      const xDomain = xScale.invert(point.x - margin.left)
-      const index = bisectDate(data, xDomain, 1)
-      const dLeft = data[index - 1]
-      const dRight = data[index]
-      let d = dLeft
-      if (dRight && dRight.date) {
-        d = xDomain - (new Date(dLeft.date)) > (new Date(dRight.date)) - xDomain ? dRight : dLeft
-      }
-      // // tooltip with mouse coords
-      // const tip = {
-      //   tooltipData: d,
-      //   tooltipLeft: point.x - margin.left,
-      //   tooltipTop: point.y - margin.top,
-      // }
-      // tooltip with data "snapping" coords
-      const tip = {
-        tooltipData: d,
-        tooltipLeft: xScale(d.date),
-        tooltipTop: yScale(d[metrics]),
-      }
-      showTooltip(tip)
+    const point = localPoint(event)
+    const xDomain = xScale.invert(point.x - margin.left)
+    const index = bisectDate(data, xDomain, 1)
+    const dLeft = data[index - 1]
+    const dRight = data[index]
+    let d = dLeft
+    if (dRight && dRight.date) {
+      d = xDomain - (new Date(dLeft.date)) > (new Date(dRight.date)) - xDomain ? dRight : dLeft
     }
+    const tip = {
+      tooltipData: d,
+      tooltipLeft: xScale(d.date),
+      tooltipTop: yScale(d[metrics]),
+    }
+    if (!snapTooltip) {
+      Object.assign(tip, {
+        tooltipLeft: point.x - margin.left,
+        tooltipTop: point.y - margin.top,
+      })
+    }
+    showTooltip(tip)
+  }
 
   const renderTooltipTrigger = () => (
     <HotZone
@@ -271,21 +269,17 @@ TimeSeries.propTypes = {
   tooltipData: PropTypes.any,
   // required
   data: PropTypes.array.isRequired,
-  // width: PropTypes.number.isRequired,
-  // height: PropTypes.number.isRequired,
   metrics: PropTypes.string.isRequired,
   // optional
-  showBg: PropTypes.bool,
   showGrid: PropTypes.bool,
   margin: PropTypes.object,
-  // fillGap: PropTypes.bool,
+  snapTooltip: PropTypes.bool,
   shape: PropTypes.string,
   minWidth: PropTypes.number,
   interval: PropTypes.string,
 }
 
 TimeSeries.defaultProps = {
-  showBg: false,
   showGrid: true,
   margin: {
     left: 100,
@@ -293,7 +287,7 @@ TimeSeries.defaultProps = {
     right: 100,
     bottom: 50,
   },
-  // fillGap: false,
+  snapTooltip: true,
   shape: 'bar',
   minWidth: 600,
   interval: 'daily',
