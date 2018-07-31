@@ -53,24 +53,27 @@ class TimeSeriesContainer extends React.Component {
 
     return (
       <div>
-        <div>
-          {['daily', 'hourly'].map(interval => (
-            <button key={interval} onClick={this.handleInterval(interval)}>
-              {interval}
+        <div style={{ textAlign: 'center' }}>
+          <h3>Time Series</h3>
+          <div style={{ display: 'inline-block', margin: '0 1rem' }}>
+            {['daily', 'hourly'].map(interval => (
+              <button key={interval} onClick={this.handleInterval(interval)}>
+                {interval}
+              </button>
+            ))}
+          </div>
+          <div style={{ display: 'inline-block', margin: '0 1rem' }}>
+            {['bar', 'area', 'line'].map(shape => (
+              <button key={shape} onClick={this.handleShape(shape)}>
+                {shape}
+              </button>
+            ))}
+          </div>
+          <div style={{ display: 'inline-block', margin: '0 1rem' }}>
+            <button onClick={this.toggleSnapTooltip(snapTooltip)}>
+              tooltip {snapTooltip ? 'snapping ' : 'loose'}
             </button>
-          ))}
-        </div>
-        <div>
-          {['bar', 'area', 'line'].map(shape => (
-            <button key={shape} onClick={this.handleShape(shape)}>
-              {shape}
-            </button>
-          ))}
-        </div>
-        <div>
-          <button onClick={this.toggleSnapTooltip(snapTooltip)}>
-            tooltip {snapTooltip ? 'snapping ' : 'loose'}
-          </button>
+          </div>
         </div>
         <div style={{ height: '345', clear: 'both' }}>
           <TimeSeries

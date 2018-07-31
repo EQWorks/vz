@@ -70,6 +70,15 @@ const TimeSeries = ({
   minWidth,
   interval,
 }) => {
+  if (width < minWidth) {
+    return (
+      <NoSpace
+        width={width}
+        height={height}
+      />
+    )
+  }
+
   const fillZero = () => xRange.map(date => (
     data.find(item => item.date.isSame(moment(date))) || {
       date,
@@ -80,10 +89,10 @@ const TimeSeries = ({
   const today = moment.utc().startOf('day')
 
   // accessors
-  const xGetter = d => d.date
-  const yGetter = d => (d[metrics] || 0)
+  const xGetter = (d) => d.date
+  const yGetter = (d) => (d[metrics] || 0)
   const bisectDate = bisector(xGetter).left
-  const color = d => (d && moment(xGetter(d)).startOf('day').isSame(today) ? 'Teal' : 'LightSkyBlue')
+  const color = (d) => (d && moment(xGetter(d)).startOf('day').isSame(today) ? 'Teal' : 'LightSkyBlue')
 
   // bounds
   const xMax = width - margin.left - margin.right
@@ -235,15 +244,6 @@ const TimeSeries = ({
       />
     )
   )
-
-  if (width < minWidth) {
-    return (
-      <NoSpace
-        width={width}
-        height={height}
-      />
-    )
-  }
 
   return (
     <React.Fragment>
