@@ -192,14 +192,18 @@ const TimeSeries = ({
     />
   )
 
-  const renderTooltip = () => (
-    tooltipOpen && (
+  const renderTooltip = () => {
+    let timeFormat = 'ddd, LL'
+    if (interval !== 'daily') {
+      timeFormat += ' LT'
+    }
+    return tooltipOpen && (
       <React.Fragment key={Math.random()}>
         <TooltipWithBounds
           top={yMax + margin.top}
           left={tooltipLeft + margin.left}
         >
-          {moment.utc(tooltipData.date).format('ddd, LL')}
+          {moment.utc(tooltipData.date).format(timeFormat)}
           {tooltipData[metrics] === 0 && (
             <span style={{ color: color(tooltipData) }}>
               {`: ${tooltipData[metrics]}`}
@@ -219,7 +223,7 @@ const TimeSeries = ({
         )}
       </React.Fragment>
     )
-  )
+  }
 
   const renderMarkers = () => (
     tooltipOpen && (
