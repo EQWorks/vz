@@ -126,7 +126,7 @@ const TimeSeries = ({
     />
   )
 
-  const renderLineArea = shape => (
+  const renderLineArea = () => (
     <LineArea
       showArea={shape === 'area'}
       data={fillZero()}
@@ -142,7 +142,7 @@ const TimeSeries = ({
     if (shape === 'bar') {
       return renderBars()
     }
-    return renderLineArea(shape)
+    return renderLineArea()
   }
 
   const renderAxes = () => (
