@@ -9,6 +9,7 @@
   "scripts": {
     "start": "parcel demo/index.html",
     "build": "rimraf publish && parcel build src/index.js --out-dir publish",
+    "build:demo": "parcel build",
     "lint": "eslint -c .eslintrc.js --ext .js src/",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepublishOnly": "npm run build"
