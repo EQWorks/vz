@@ -35,9 +35,9 @@ const Breakdown = ({
     bottom: 50,
   },
   shape='donut',
-  minWidth=600,
+  minWidth=400,
 }) => {
-  if (width < minWidth) {
+  if (width < minWidth || height < minWidth) {
     return (
       <NoSpace
         width={width}

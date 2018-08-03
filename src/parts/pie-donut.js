@@ -91,7 +91,7 @@ const PieDonut = ({
           <Label
             x={x}
             y={y}
-            children={`${kGetter(arc.data)}: ${vGetter(arc.data)}%`}
+            children={`${kGetter(arc.data)}: ${vGetter(arc.data)}`}
           />
         )
       }}
