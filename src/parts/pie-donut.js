@@ -75,21 +75,11 @@ const PieDonut = ({
       }}
       onMouseMove={(arc) => (event) => {
         const point = localPoint(event)
-        const {
-          startAngle,
-          endAngle,
-          padAngle,
-          centroid,
-          data,
-        } = arc
         showTooltip({
           tooltipData: {
+            ...arc,
             // TODO: hack to resolve 0 startAngle issue
-            startAngle: startAngle ? startAngle : 0.000000000001,
-            endAngle,
-            padAngle,
-            centroid,
-            data,
+            startAngle: arc.startAngle ? arc.startAngle : 0.000000000001,
             outerRadius,
             innerRadius,
           },
