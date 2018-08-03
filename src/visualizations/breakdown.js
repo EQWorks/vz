@@ -75,8 +75,8 @@ const Breakdown = ({
           <g>
             <PatternLines
               id='lines'
-              height={5}
-              width={5}
+              height={4}
+              width={4}
               stroke='black'
               strokeWidth={1}
               orientation={['diagonal']}
