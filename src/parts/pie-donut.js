@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import { Pie } from '@vx/shape'
+import { localPoint } from '@vx/event'
 
 function Label({ x, y, children }) {
   return (
@@ -22,9 +23,13 @@ const PieDonut = ({
   width,
   height,
   data,
+  kGetter,
   vGetter,
+  showTooltip,
+  hideTooltip,
   // optional
   hollow=true,
+  // snapTooltip=true,
 }) => {
   const radius = Math.min(width, height) / 2
   const outerRadius = radius - 90
@@ -39,6 +44,30 @@ const PieDonut = ({
       return 1
     }
     return diff
+  }
+
+  const handleTooltip = ({ data, event }) => {
+    const point = localPoint(event)
+    const xDomain = xScale.invert(point.x - margin.left)
+    const index = bisectDate(data, xDomain, 1)
+    const dLeft = data[index - 1]
+    const dRight = data[index]
+    let d = dLeft
+    if (dRight && dRight.date) {
+      d = xDomain - (new Date(dLeft.date)) > (new Date(dRight.date)) - xDomain ? dRight : dLeft
+    }
+    const tip = {
+      tooltipData: d,
+      tooltipLeft: xScale(d.date),
+      tooltipTop: yScale(d[metrics]),
+    }
+    if (!snapTooltip) {
+      Object.assign(tip, {
+        tooltipLeft: point.x - margin.left,
+        tooltipTop: point.y - margin.top,
+      })
+    }
+    showTooltip(tip)
   }
 
   return (
@@ -62,10 +91,20 @@ const PieDonut = ({
           <Label
             x={x}
             y={y}
-            children={`${arc.data.label}: ${arc.data.usage}%`}
+            children={`${kGetter(arc.data)}: ${vGetter(arc.data)}%`}
           />
         )
       }}
+      onMouseMove={(arc) => (event) => {
+        const { data: tooltipData, centroid } = arc
+        const point = localPoint(event)
+        showTooltip({
+          tooltipData,
+          tooltipLeft: point.x,
+          tooltipTop: point.y,
+        })
+      }}
+      onMouseLeave={() => () => { hideTooltip() }}
     />
   )
 }
@@ -75,13 +114,18 @@ PieDonut.propTypes = {
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
   data: PropTypes.array.isRequired,
+  kGetter: PropTypes.func.isRequired,
   vGetter: PropTypes.func.isRequired,
+  showTooltip: PropTypes.func.isRequired,
+  hideTooltip: PropTypes.func.isRequired,
   // optional
   hollow: PropTypes.bool,
+  // snapTooltip: PropTypes.bool,
 }
 
 PieDonut.defaultProps = {
   hollow: true,
+  // snapTooltip: true,
 }
 
 export default PieDonut

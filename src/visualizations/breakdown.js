@@ -5,7 +5,6 @@ import { withParentSize } from '@vx/responsive'
 import { withTooltip, TooltipWithBounds } from '@vx/tooltip'
 import { Group } from '@vx/group'
 
-
 import {
   NoSpace,
   Markers,
@@ -48,6 +47,7 @@ const Breakdown = ({
   }
 
   // accessors
+  const kGetter = (d) => d.label // TODO: config
   const vGetter = (d) => d[metrics]
   const opacity = (d) => 1 / (d.index + 1.7)
   const sort = (a, b) => {
@@ -68,10 +68,31 @@ const Breakdown = ({
           width={width}
           height={height}
           data={data}
+          kGetter={kGetter}
           vGetter={vGetter}
+          showTooltip={showTooltip}
+          hideTooltip={hideTooltip}
           hollow={shape === 'donut'}
         />
       </Group>
+    )
+  }
+
+  const renderTooltip = () => {
+    return tooltipOpen && (
+      <React.Fragment key={Math.random()}>
+        {tooltipData[metrics] > 0 && (
+          <TooltipWithBounds
+            top={tooltipTop}
+            left={tooltipLeft}
+            style={{
+              color: 'teal'
+            }}
+          >
+            {`${kGetter(tooltipData)}: ${vGetter(tooltipData)}`}
+          </TooltipWithBounds>
+        )}
+      </React.Fragment>
     )
   }
 
@@ -80,6 +101,7 @@ const Breakdown = ({
       <svg width={width} height={height}>
         {renderPieDonut()}
       </svg>
+      {renderTooltip()}
     </React.Fragment>
   )
 }
