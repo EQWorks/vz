@@ -5,6 +5,10 @@ import { withParentSize } from '@vx/responsive'
 import { withTooltip, TooltipWithBounds } from '@vx/tooltip'
 import { Group } from '@vx/group'
 
+// TODO: factor into parts
+import { Arc } from '@vx/shape'
+import { PatternLines } from '@vx/pattern'
+
 import {
   NoSpace,
   Markers,
@@ -53,7 +57,6 @@ const Breakdown = ({
   // accessors
   const kGetter = (d) => d.label // TODO: config
   const vGetter = (d) => d[metrics]
-  const opacity = (d) => 1 / (d.index + 1.7)
   const sort = (a, b) => {
     const diff = a - b
     if (diff > 0) {
@@ -68,6 +71,22 @@ const Breakdown = ({
   const renderPieDonut = () => {
     return (
       <Group top={height / 2 - margin.top} left={width / 2}>
+        {tooltipOpen && (
+          <g>
+            <PatternLines
+              id='lines'
+              height={5}
+              width={5}
+              stroke='black'
+              strokeWidth={1}
+              orientation={['diagonal']}
+            />
+            <Arc
+              fill='url("#lines")'
+              {...tooltipData}
+            />
+          </g>
+        )}
         <PieDonut
           width={width}
           height={height}
@@ -85,7 +104,7 @@ const Breakdown = ({
   const renderTooltip = () => {
     return tooltipOpen && (
       <React.Fragment key={Math.random()}>
-        {tooltipData[metrics] > 0 && (
+        {tooltipData.data[metrics] > 0 && (
           <TooltipWithBounds
             top={tooltipTop}
             left={tooltipLeft}
@@ -93,7 +112,7 @@ const Breakdown = ({
               color: 'teal'
             }}
           >
-            {`${kGetter(tooltipData)}: ${vGetter(tooltipData)}`}
+            {`${kGetter(tooltipData.data)}: ${vGetter(tooltipData.data)}`}
           </TooltipWithBounds>
         )}
       </React.Fragment>

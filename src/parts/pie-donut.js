@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import { Pie } from '@vx/shape'
+import { Pie, Arc } from '@vx/shape'
 import { localPoint } from '@vx/event'
 
 function Label({ x, y, children }) {
@@ -11,6 +11,9 @@ function Label({ x, y, children }) {
       textAnchor='middle'
       x={x}
       y={y}
+      style={{
+        fontSize: '0.9rem'
+      }}
     >
       {children}
     </text>
@@ -32,7 +35,7 @@ const PieDonut = ({
 }) => {
   const radius = Math.min(width, height) / 2
   const outerRadius = radius - 90
-  const innerRadius = radius - radius / 1.37
+  const innerRadius = hollow ? radius - radius / 1.37 : 0
   const opacity = (d) => 1 / (d.index + 1.7)
   const sort = (a, b) => {
     const diff = a - b
@@ -45,36 +48,12 @@ const PieDonut = ({
     return diff
   }
 
-  const handleTooltip = ({ data, event }) => {
-    const point = localPoint(event)
-    const xDomain = xScale.invert(point.x - margin.left)
-    const index = bisectDate(data, xDomain, 1)
-    const dLeft = data[index - 1]
-    const dRight = data[index]
-    let d = dLeft
-    if (dRight && dRight.date) {
-      d = xDomain - (new Date(dLeft.date)) > (new Date(dRight.date)) - xDomain ? dRight : dLeft
-    }
-    const tip = {
-      tooltipData: d,
-      tooltipLeft: xScale(d.date),
-      tooltipTop: yScale(d[metrics]),
-    }
-    if (!snapTooltip) {
-      Object.assign(tip, {
-        tooltipLeft: point.x - margin.left,
-        tooltipTop: point.y - margin.top,
-      })
-    }
-    showTooltip(tip)
-  }
-
   return (
     <Pie
       data={data}
       pieValue={vGetter}
       outerRadius={outerRadius}
-      innerRadius={hollow ? innerRadius : 0}
+      innerRadius={innerRadius}
       // cornerRadius={0}
       // padAngle={0.005}
       fill='teal'
@@ -95,10 +74,25 @@ const PieDonut = ({
         )
       }}
       onMouseMove={(arc) => (event) => {
-        const { data: tooltipData, centroid } = arc
         const point = localPoint(event)
+        const {
+          startAngle,
+          endAngle,
+          padAngle,
+          centroid,
+          data,
+        } = arc
         showTooltip({
-          tooltipData,
+          tooltipData: {
+            // TODO: hack to resolve 0 startAngle issue
+            startAngle: startAngle ? startAngle : 0.000000000001,
+            endAngle,
+            padAngle,
+            centroid,
+            data,
+            outerRadius,
+            innerRadius,
+          },
           tooltipLeft: point.x,
           tooltipTop: point.y,
         })
