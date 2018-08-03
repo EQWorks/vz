@@ -11,7 +11,6 @@ function Label({ x, y, children }) {
       textAnchor='middle'
       x={x}
       y={y}
-      fontSize={10}
     >
       {children}
     </text>

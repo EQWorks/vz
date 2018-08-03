@@ -46,6 +46,10 @@ const Breakdown = ({
     )
   }
 
+  // bounds
+  const xMax = width - margin.left - margin.right
+  const yMax = height - margin.top - margin.bottom
+
   // accessors
   const kGetter = (d) => d.label // TODO: config
   const vGetter = (d) => d[metrics]
@@ -96,10 +100,22 @@ const Breakdown = ({
     )
   }
 
+  const renderMarkers = () => (
+    tooltipOpen && (
+      <Markers
+        x={tooltipLeft}
+        y={tooltipTop}
+        xMax={xMax}
+        yMax={yMax}
+      />
+    )
+  )
+
   return (
     <React.Fragment>
       <svg width={width} height={height}>
         {renderPieDonut()}
+        {renderMarkers()}
       </svg>
       {renderTooltip()}
     </React.Fragment>
