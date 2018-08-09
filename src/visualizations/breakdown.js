@@ -57,16 +57,6 @@ const Breakdown = ({
   // accessors
   const kGetter = (d) => d.label // TODO: config
   const vGetter = (d) => d[metrics]
-  const sort = (a, b) => {
-    const diff = a - b
-    if (diff > 0) {
-      return -1
-    }
-    if (diff < 0) {
-      return 1
-    }
-    return diff
-  }
 
   const renderPieDonut = () => {
     return (
