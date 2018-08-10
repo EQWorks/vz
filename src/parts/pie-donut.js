@@ -1,24 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import { Pie, Arc } from '@vx/shape'
+import { Pie } from '@vx/shape'
 import { localPoint } from '@vx/event'
-
-function Label({ x, y, children }) {
-  return (
-    <text
-      fill='black'
-      textAnchor='middle'
-      x={x}
-      y={y}
-      style={{
-        fontSize: '0.9rem'
-      }}
-    >
-      {children}
-    </text>
-  )
-}
 
 const PieDonut = ({
   // required
@@ -66,22 +50,31 @@ const PieDonut = ({
           return null
         }
         return (
-          <Label
+          <text
+            fill='black'
+            textAnchor='middle'
             x={x}
             y={y}
-            children={`${kGetter(arc.data)}: ${vGetter(arc.data)}`}
-          />
+            style={{
+              fontSize: '0.9rem'
+            }}
+          >
+            {`${kGetter(arc.data)}: ${vGetter(arc.data)}`}
+          </text>
         )
       }}
       onMouseMove={(arc) => (event) => {
         const point = localPoint(event)
+
         showTooltip({
           tooltipData: {
             ...arc,
             // TODO: hack to resolve 0 startAngle issue
             startAngle: arc.startAngle ? arc.startAngle : 0.000000000001,
+
+            innerRadius: innerRadius ? innerRadius : 0.000000000001,
+
             outerRadius,
-            innerRadius,
           },
           tooltipLeft: point.x,
           tooltipTop: point.y,
