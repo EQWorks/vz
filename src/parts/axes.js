@@ -5,6 +5,8 @@ import { AxisLeft, AxisBottom } from '@vx/axis'
 import { Grid } from '@vx/grid'
 
 const Axes = ({
+  showAxisX,
+  showAxisY,
   showGrid,
   xMax,
   yMax,
@@ -23,24 +25,26 @@ const Axes = ({
         numTicksColumns={bottom.numTicks}
       />
     )}
-    <AxisLeft
+    {showAxisY && <AxisLeft
       top={left.top}
       left={left.left}
       scale={left.scale}
       numTicks={left.numTicks}
       label={left.label}
-    />
-    <AxisBottom
+    />}
+    {showAxisX && <AxisBottom
       top={bottom.top}
       left={bottom.left}
       scale={bottom.scale}
       numTicks={bottom.numTicks}
       label={bottom.label}
-    />
+    />}
   </React.Fragment>
 )
 
 Axes.propTypes = {
+  showAxisX: PropTypes.bool,
+  showAxisY: PropTypes.bool,
   showGrid: PropTypes.bool,
   xMax: PropTypes.number,
   yMax: PropTypes.number,
@@ -49,6 +53,8 @@ Axes.propTypes = {
   // right: PropTypes.object,
 }
 Axes.defaultProps = {
+  showAxisX: true,
+  showAxisY: true,
   showGrid: true,
   xMax: 0,
   yMax: 0,

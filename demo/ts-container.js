@@ -28,7 +28,12 @@ class TimeSeriesContainer extends React.Component {
     this.state = {
       interval: 'daily',
       shape: 'bar',
-      snapTooltip: true,
+      toggles: {
+        snapTooltip: true,
+        showAxisX: true,
+        showAxisY: true,
+        showGrid: true,
+      },
     }
   }
 
@@ -40,15 +45,16 @@ class TimeSeriesContainer extends React.Component {
     this.setState({ shape })
   }
 
-  toggleSnapTooltip = (snapTooltip) => () => {
-    this.setState({ snapTooltip: !snapTooltip })
+  handleToggle = (toggle) => () => {
+    const toggles = { ...this.state.toggles, [toggle]: !this.state.toggles[toggle] }
+    this.setState({ toggles })
   }
 
   render() {
     const {
       interval,
       shape,
-      snapTooltip,
+      toggles,
     } = this.state
 
     return (
@@ -70,9 +76,11 @@ class TimeSeriesContainer extends React.Component {
             ))}
           </div>
           <div style={{ display: 'inline-block', margin: '0 1rem' }}>
-            <button onClick={this.toggleSnapTooltip(snapTooltip)}>
-              tooltip {snapTooltip ? 'snapping ' : 'loose'}
-            </button>
+            {Object.keys(toggles).map(toggle => (
+              <button key={toggle} onClick={this.handleToggle(toggle)}>
+                {toggle}
+              </button>
+            ))}
           </div>
         </div>
         <div style={{ height: '345', clear: 'both' }}>
@@ -81,7 +89,7 @@ class TimeSeriesContainer extends React.Component {
             metrics="impressions"
             shape={shape}
             interval={interval}
-            snapTooltip={snapTooltip}
+            {...toggles}
           />
         </div>
       </div>
