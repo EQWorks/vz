@@ -11,7 +11,6 @@ const ScatterPlot = ({
 	yGetter,
 	xScale,
 	yScale,
-	margin,
 	shapeSize,
 }) => {
 	return (
@@ -22,7 +21,7 @@ const ScatterPlot = ({
 		                className="dot"
 		                key={`point-${xGetter(pt)}-${i}`}
 		                fill={'#f6c431'}
-		                left={xScale(xGetter(pt))+margin.left}
+		                left={xScale(xGetter(pt))}
 		                top={yScale(yGetter(pt))}
 		                size={shapeSize}
 		            />
