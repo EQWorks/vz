@@ -11,14 +11,18 @@ const PieDonut = ({
   data,
   kGetter,
   vGetter,
+  leftShift,
+  topShift,
   showTooltip,
   hideTooltip,
+  startAngle,
+  endAngle,
   // optional
   hollow=true,
   // snapTooltip=true,
 }) => {
   const radius = Math.min(width, height) / 2
-  const outerRadius = radius - 90
+  const outerRadius = radius
   const innerRadius = hollow ? radius - radius / 1.37 : 0
   const opacity = (d) => 1 / (d.index + 1.7)
   const sort = (a, b) => {
@@ -32,12 +36,19 @@ const PieDonut = ({
     return diff
   }
 
+  const top = topShift()
+  const left = leftShift()
+
   return (
     <Pie
+      top={top}
+      left={left}
       data={data}
       pieValue={vGetter}
       outerRadius={outerRadius}
       innerRadius={innerRadius}
+      endAngle={endAngle}
+      startAngle={startAngle}
       // cornerRadius={0}
       // padAngle={0.005}
       fill='teal'
