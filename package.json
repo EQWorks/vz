@@ -39,7 +39,7 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-react": "^6.24.1",
     "babel-runtime": "^6.26.0",
-    "eslint": "^5.1.0",
+    "eslint": "^5.4.0",
     "eslint-plugin-react": "^7.10.0",
     "parcel-bundler": "^1.9.7",
     "prop-types": "^15.6.2",

@@ -4,24 +4,22 @@ import {
   Scatter,
   Axes,
   PieDonut,
+  // Markers,
 } from '../parts'
+import { withParentSize } from '@vx/responsive'
+import { withTooltip, TooltipWithBounds } from '@vx/tooltip'
+
 import { numTicksForHeight, numTicksForWidth } from '../utils/responsive'
 import { scaleLinear, scaleBand } from '@vx/scale'
-import { extent, max, bisector } from 'd3-array'
+import { extent } from 'd3-array'
 import { Group } from '@vx/group'
-import { withParentSize } from '@vx/responsive'
-import { withToolTip } from '@vx/tooltip'
+import { Arc } from '@vx/shape'
+import { PatternLines } from '@vx/pattern'
 
 const ScatterPie = ({
-  width,
-  height,
-  data,
-  margin = {
-    left: 50,
-    top: 20,
-    bottom: 50,
-    right: 50,
-  },
+  // withParentSize
+  parentWidth: width,
+  parentHeight: height,
   // withToolTip
   showTooltip,
   hideTooltip,
@@ -29,6 +27,8 @@ const ScatterPie = ({
   tooltipLeft,
   tooltipTop,
   tooltipData,
+  data,
+  margin,
 }) => {
 
   const xMax = width - margin.left - margin.right
@@ -38,9 +38,7 @@ const ScatterPie = ({
 
   const kGetter = (d) => parseInt(d.fieldName)
   const vGetter = (d) => d.value
-
-  const x = (d, i) => `Category ${i}`
-  const y = (d) => vGetter(d)
+  const iGetter = (d, i) => `Category ${i}`
 
   const totals = data.map(arr => arr.reduce((acc, cur) => acc + vGetter(cur), 0))
 
@@ -48,31 +46,42 @@ const ScatterPie = ({
   const paddingOuter = 0.1
 
   const xScale = scaleBand({
-    domain: data.map(x),
+    domain: data.map(iGetter),
     range: [0, xMax],
     paddingInner: paddingInner,
     paddingOuter: paddingOuter
   })
 
-  // scale y axis based on total values
-  const yScale = scaleLinear({
-    domain: extent(totals),
-    range: [yMax, 0],
+  const domain = extent(totals)
+  const radiusInPx = xScale.bandwidth() / 2
+
+  // get radius in base unit
+  const reverseYScale = scaleLinear({
+    domain: [yMax, 0],
+    range: domain,
     clamp: true
   })
 
-  /** data = [
-	* {'fieldname': 'statuscode1','value': total_for_status_1},
-	* {'fieldname': 'statuscode2', 'value': total_for_status_2},
-	*	...
-	* ]
-	**/
-  const scatterShape = (d, i) => {
+  const radiusInBaseUnit = reverseYScale(radiusInPx)
 
+  // avoid overflow on y axis
+  const yScale = scaleLinear({
+    domain: [domain[0] - radiusInBaseUnit, domain[1] + radiusInBaseUnit],
+    range: [yMax, 0],
+    clamp: true,
+  })
+
+  /** data = [
+  * {'fieldname': 'statuscode1','value': total_for_status_1},
+  * {'fieldname': 'statuscode2', 'value': total_for_status_2},
+  * ...
+  * ]
+  **/
+  const scatterShape = (d, i) => {
     const diameter = xScale.bandwidth()
 
     const leftShift = () => {
-      return xScale(x(d,i)) + diameter / 2
+      return xScale(iGetter(d,i)) + diameter / 2
     }
 
     const topShift = () => {
@@ -80,32 +89,96 @@ const ScatterPie = ({
       return yScale(totals[i])
     }
 
-    let startAngle = 0
-    let endAngle = 2 * Math.PI
+    // let startAngle = 0
+    // let endAngle = 2 * Math.PI
 
-    if (i === 0) {
-      startAngle = Math.PI * 0.5
-      endAngle = Math.PI * 1.5
-    } else if (i === data.length - 1) {
-      startAngle = Math.PI * 1.5
-      endAngle = Math.PI * 2.5
-    }
+    // if (i === 0) {
+    //   startAngle = Math.PI * 0.5
+    //   endAngle = Math.PI * 1.5
+    // } else if (i === data.length - 1) {
+    //   startAngle = Math.PI * 1.5
+    //   endAngle = Math.PI * 2.5
+    // }
+
+    const left = leftShift()
+    const top = topShift()
 
     return (
-      <PieDonut
-			  key={`pie-${i}`}
-			  width={diameter}
-			  height={diameter}
-			  data={d}
-			  kGetter={kGetter}
-			  vGetter={vGetter}
-			  xScale={xScale}
-			  yScale={yScale}
-			  leftShift={leftShift}
-			  topShift={topShift}
-			  startAngle={startAngle}
-			  endAngle={endAngle}
-			  hollow={false}
+      <Group key={`Pie ${i}`} top={top} left={left}>
+        {tooltipOpen && tooltipData.id === i && (
+          <g>
+            <PatternLines
+              id='lines'
+              height={4}
+              width={4}
+              stroke='black'
+              strokeWidth={1}
+              orientation={['diagonal']}
+            />
+            <Arc
+              fill='url("#lines")'
+              {...tooltipData}
+            />
+          </g>
+        )}
+        <PieDonut
+          key={`pie-${i}`}
+          id={i}
+          width={diameter}
+          height={diameter}
+          data={d}
+          kGetter={kGetter}
+          vGetter={vGetter}
+          xScale={xScale}
+          yScale={yScale}
+          showTooltip={showTooltip}
+          hideTooltip={hideTooltip}
+          hollow={false}
+        />
+      </Group>
+    )
+  }
+
+  const renderTooltip = () => {
+    return tooltipOpen && (
+      <React.Fragment key={Math.random()}>
+        {tooltipData.data && (
+          <TooltipWithBounds
+            top={tooltipTop}
+            left={tooltipLeft}
+            style={{
+              color: 'teal'
+            }}
+          >
+            {`Sub-category ${kGetter(tooltipData.data)}: ${vGetter(tooltipData.data)}`}
+          </TooltipWithBounds>
+        )}
+      </React.Fragment>
+    )
+  }
+
+  const renderAxes = () => {
+    return (
+      <Axes
+        showAxisX={true}
+        showAxisY={true}
+        showGrid={false}
+        xMax={xMax}
+        yMax={yMax}
+        left={{
+          top: 0,
+          left: 0,
+          scale: yScale,
+          numTicks: numTicksForHeight(height),
+          label: 'population',
+        }}
+        bottom={{
+          top: yMax,
+          left: 0,
+          scale: xScale,
+          numTicks: numTicksForWidth(width),
+          label: 'categories',
+        }}
       />
     )
   }
@@ -114,37 +187,41 @@ const ScatterPie = ({
     <React.Fragment>
       <svg width={width} height={height}>
         <Group
-        	left={margin.left}
-        	bottom={margin.bottom}
-        	top={margin.top}
-        	right={margin.right}>
+          left={margin.left}
+          bottom={margin.bottom}
+          top={margin.top}
+          right={margin.right}>
           <Scatter scatterShape={scatterShape} data={data}/>
-          <Axes
-		      showAxisX={true}
-		      showAxisY={true}
-		      showGrid={false}
-		      xMax={xMax}
-		      yMax={yMax}
-		      left={{
-		        top: 0,
-		        left: 0,
-		        scale: yScale,
-		        numTicks: numTicksForHeight(height),
-		        label: 'population',
-		      }}
-		      bottom={{
-		        top: yMax,
-		        left: 0,
-		        scale: xScale,
-		        numTicks: numTicksForWidth(width),
-		        label: 'categories',
-		      }}
-		    />
+          {renderAxes()}
         </Group>
       </svg>
-
+      {renderTooltip()}
     </React.Fragment>
   )
 }
 
-export default ScatterPie
+ScatterPie.propTypes = {
+  // withParentSize
+  parentWidth: PropTypes.number.isRequired,
+  parentHeight: PropTypes.number.isRequired,
+  // withTooltip
+  showTooltip: PropTypes.func.isRequired,
+  hideTooltip: PropTypes.func.isRequired,
+  tooltipOpen: PropTypes.bool.isRequired,
+  tooltipTop: PropTypes.number,
+  tooltipLeft: PropTypes.number,
+  tooltipData: PropTypes.any,
+  // ScatterPie
+  data: PropTypes.array.isRequired,
+  margin: PropTypes.object
+}
+
+ScatterPie.defaultProps = {
+  margin: {
+    left: 50,
+    top: 20,
+    bottom: 50,
+    right: 50,
+  }
+}
+export default withParentSize(withTooltip(ScatterPie))

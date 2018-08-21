@@ -11,14 +11,12 @@ const PieDonut = ({
   data,
   kGetter,
   vGetter,
-  leftShift,
-  topShift,
   showTooltip,
   hideTooltip,
-  startAngle,
-  endAngle,
   // optional
-  hollow=true,
+  hollow,
+  showData,
+  id,
   // snapTooltip=true,
 }) => {
   const radius = Math.min(width, height) / 2
@@ -36,19 +34,12 @@ const PieDonut = ({
     return diff
   }
 
-  const top = topShift()
-  const left = leftShift()
-
   return (
     <Pie
-      top={top}
-      left={left}
       data={data}
       pieValue={vGetter}
       outerRadius={outerRadius}
       innerRadius={innerRadius}
-      endAngle={endAngle}
-      startAngle={startAngle}
       // cornerRadius={0}
       // padAngle={0.005}
       fill='teal'
@@ -60,19 +51,21 @@ const PieDonut = ({
         if (endAngle - startAngle - padAngle < .1) {
           return null
         }
-        return (
-          <text
-            fill='black'
-            textAnchor='middle'
-            x={x}
-            y={y}
-            style={{
-              fontSize: '0.9rem'
-            }}
-          >
-            {`${kGetter(arc.data)}: ${vGetter(arc.data)}`}
-          </text>
-        )
+        if (showData || id === null) {
+          return (
+            <text
+              fill='black'
+              textAnchor='middle'
+              x={x}
+              y={y}
+              style={{
+                fontSize: '0.9rem'
+              }}
+            >
+              {`${kGetter(arc.data)}: ${vGetter(arc.data)}`}
+            </text>
+          )
+        }
       }}
       onMouseMove={(arc) => (event) => {
         const point = localPoint(event)
@@ -85,6 +78,7 @@ const PieDonut = ({
 
             innerRadius: innerRadius ? innerRadius : 0.000000000001,
 
+            id,
             outerRadius,
           },
           tooltipLeft: point.x,
@@ -107,11 +101,15 @@ PieDonut.propTypes = {
   hideTooltip: PropTypes.func.isRequired,
   // optional
   hollow: PropTypes.bool,
+  id: PropTypes.number,
+  showData: PropTypes.bool,
   // snapTooltip: PropTypes.bool,
 }
 
 PieDonut.defaultProps = {
   hollow: true,
+  id: null,
+  showData: false,
   // snapTooltip: true,
 }
 

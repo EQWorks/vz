@@ -6,8 +6,8 @@ import ScatterPieContainer from './sp-container'
 
 const App = () => (
   <React.Fragment>
-    {false && <BreakdownContainer />}
-    {false && <TimeSeriesContainer />}
+    <BreakdownContainer />
+    <TimeSeriesContainer />
     <ScatterPieContainer />
   </React.Fragment>
 )

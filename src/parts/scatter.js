@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { GlyphCircle } from '@vx/glyph'
 
 const Scatter = ({
   scatterShape,
@@ -13,4 +12,9 @@ const Scatter = ({
   )
 }
 
+Scatter.propTypes = {
+  data: PropTypes.array.isRequired,
+  scatterShape: PropTypes.func.isRequired,
+
+}
 export default Scatter

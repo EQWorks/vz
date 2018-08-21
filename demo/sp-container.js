@@ -3,7 +3,7 @@ import MultiDimData from './mock-data/multi-dim'
 import { ScatterPie } from '../src/visualizations'
 
 const scatterData = Object.keys(MultiDimData[0])
-  .filter(k => k === 'f2'
+  .filter(k => k === 'f3'
   || k === 'f6' || k === 'f10' || k === 'f14')
   .map(k =>
     MultiDimData.map(arr =>
@@ -30,11 +30,14 @@ class ScatterPieContainer extends React.Component {
 
   render() {
     return(
-      <ScatterPie
-        data={scatterData}
-        width={1200}
-        height={600}
-      />
+      <div style={{ textAlign: 'center' }}>
+        <h3>Scatter Pie</h3>
+        <ScatterPie
+          data={scatterData}
+          width={1200}
+          height={600}
+        />
+      </div>
     )
   }
 }
