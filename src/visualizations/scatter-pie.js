@@ -29,6 +29,9 @@ const ScatterPie = ({
   tooltipData,
   data,
   margin,
+  yAxisLabel,
+  xAxisLabel,
+  shape,
 }) => {
 
   const xMax = width - margin.left - margin.right
@@ -38,7 +41,7 @@ const ScatterPie = ({
 
   const kGetter = (d) => parseInt(d.fieldName)
   const vGetter = (d) => d.value
-  const iGetter = (d, i) => `Category ${i}`
+  const iGetter = (d) => d[0].name
 
   const totals = data.map(arr => arr.reduce((acc, cur) => acc + vGetter(cur), 0))
 
@@ -81,24 +84,13 @@ const ScatterPie = ({
     const diameter = xScale.bandwidth()
 
     const leftShift = () => {
-      return xScale(iGetter(d,i)) + diameter / 2
+      return xScale(iGetter(d)) + diameter / 2
     }
 
     const topShift = () => {
       // place center at total
       return yScale(totals[i])
     }
-
-    // let startAngle = 0
-    // let endAngle = 2 * Math.PI
-
-    // if (i === 0) {
-    //   startAngle = Math.PI * 0.5
-    //   endAngle = Math.PI * 1.5
-    // } else if (i === data.length - 1) {
-    //   startAngle = Math.PI * 1.5
-    //   endAngle = Math.PI * 2.5
-    // }
 
     const left = leftShift()
     const top = topShift()
@@ -133,7 +125,7 @@ const ScatterPie = ({
           yScale={yScale}
           showTooltip={showTooltip}
           hideTooltip={hideTooltip}
-          hollow={false}
+          hollow={shape === 'donut'}
         />
       </Group>
     )
@@ -170,14 +162,14 @@ const ScatterPie = ({
           left: 0,
           scale: yScale,
           numTicks: numTicksForHeight(height),
-          label: 'population',
+          label: yAxisLabel,
         }}
         bottom={{
           top: yMax,
           left: 0,
           scale: xScale,
           numTicks: numTicksForWidth(width),
-          label: 'categories',
+          label: xAxisLabel,
         }}
       />
     )
@@ -213,15 +205,18 @@ ScatterPie.propTypes = {
   tooltipData: PropTypes.any,
   // ScatterPie
   data: PropTypes.array.isRequired,
-  margin: PropTypes.object
+  margin: PropTypes.object,
+  yAxisLabel: PropTypes.string.isRequired,
+  xAxisLabel: PropTypes.string.isRequired,
+  shape: PropTypes.string.isRequired,
 }
 
 ScatterPie.defaultProps = {
   margin: {
-    left: 50,
+    left: 100,
     top: 20,
     bottom: 50,
-    right: 50,
+    right: 100,
   }
 }
 export default withParentSize(withTooltip(ScatterPie))

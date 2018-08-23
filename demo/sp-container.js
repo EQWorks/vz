@@ -2,42 +2,79 @@ import React from 'react'
 import MultiDimData from './mock-data/multi-dim'
 import { ScatterPie } from '../src/visualizations'
 
-const scatterData = Object.keys(MultiDimData[0])
-  .filter(k => k === 'f3'
-  || k === 'f6' || k === 'f10' || k === 'f14')
-  .map(k =>
-    MultiDimData.map(arr =>
-    {
+/**
+ * Configure which categories should be aggregated
+ * length indicates number of pies
+ * @type {Array}
+ */
+const categoryConfig = [
+  {name: 'Age 0-5', keys: ['f3']},
+  {name: 'Age 6-17', keys: ['f4']},
+  {name: 'Age 18-24', keys: ['f5']},
+  {name: 'Age 25-29', keys: ['f6', 'f7']},
+  {name: 'Age 30-39', keys: ['f8', 'f9']},
+  {name: 'Age 40-49', keys: ['f10']},
+  {name: 'Age 50-59', keys: ['f11']},
+  {name: 'Age 60-69', keys: ['f12', 'f13']},
+  {name: 'Age 70+', keys: ['f14', 'f15', 'f16', 'f17']},
+]
 
-      const cur = parseInt(k.split('f')[1])
-      const cur_1 = Math.min(cur + 1, 17)
-      const cur_2 = Math.min(cur + 2, 17)
-      const cur_3 = Math.min(cur + 3, 17)
+/**
+ * The key for column containing subcategory values
+ * @type {String}
+ */
+const subCategoryKey = 'f1'
 
-      return {
-        fieldName: arr['f1'],
-        value: arr[k] + arr[`f${cur_1}`] + arr[`f${cur_2}`] + arr[`f${cur_3}`]
-      }
+/**
+ * Data for scatter plot
+ * @type {Array}
+ */
+const scatterData = categoryConfig.map(cg => {
+  return MultiDimData.map(arr => {
+    return {
+      fieldName: arr[subCategoryKey],
+      value: cg.keys.reduce((acc, cur) => acc + arr[cur], 0),
+      name: cg.name,
     }
-    )
-  )
+  })
+})
 
 
 class ScatterPieContainer extends React.Component {
   constructor(props) {
     super(props)
+    this.state = {
+      shape: 'pie',
+    }
+  }
+
+  handleShape = (shape) => () => {
+    this.setState({ shape })
   }
 
   render() {
+
     return(
-      <div style={{ textAlign: 'center' }}>
-        <h3>Scatter Pie</h3>
+      <React.Fragment>
+        <div style={{ textAlign: 'center' }}>
+          <h3>Scatter Pie</h3>
+          <div style={{ display: 'inline-block', margin: '0 1rem' }}>
+            {['donut', 'pie'].map(shape => (
+              <button key={shape} onClick={this.handleShape(shape)}>
+                {shape}
+              </button>
+            ))}
+          </div>
+        </div>
         <ScatterPie
           data={scatterData}
           width={1200}
           height={600}
+          shape={this.state.shape}
+          yAxisLabel='Population'
+          xAxisLabel='Age Groups'
         />
-      </div>
+      </React.Fragment>
     )
   }
 }
