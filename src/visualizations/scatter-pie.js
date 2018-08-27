@@ -4,6 +4,7 @@ import {
   Scatter,
   Axes,
   PieDonut,
+  NoSpace,
   // Markers,
 } from '../parts'
 import { withParentSize } from '@vx/responsive'
@@ -32,12 +33,20 @@ const ScatterPie = ({
   yAxisLabel,
   xAxisLabel,
   shape,
+  minWidth,
+  minHeight,
 }) => {
+  if (width < minWidth || height < minHeight) {
+    return (
+      <NoSpace
+        width={width}
+        height={height}
+      />
+    )
+  }
 
   const xMax = width - margin.left - margin.right
   const yMax = height - margin.bottom - margin.top
-
-  if (width < 10) return null
 
   const kGetter = (d) => parseInt(d.fieldName)
   const vGetter = (d) => d.value
@@ -52,7 +61,7 @@ const ScatterPie = ({
     domain: data.map(iGetter),
     range: [0, xMax],
     paddingInner: paddingInner,
-    paddingOuter: paddingOuter
+    paddingOuter: paddingOuter,
   })
 
   const domain = extent(totals)
@@ -62,41 +71,59 @@ const ScatterPie = ({
   const reverseYScale = scaleLinear({
     domain: [0, yMax],
     range: domain,
-    clamp: true
+    clamp: true,
   })
 
   const bottom = reverseYScale(radiusInPx)
   const top = reverseYScale(radiusInPx * 2.5)
   const radiusInBaseUnit = top - bottom
 
-
-  // avoid overflow on y axis
+  /**
+   * scale for y axis
+   * @type {function}
+   */
   const yScale = scaleLinear({
     domain: [domain[0] - radiusInBaseUnit, domain[1] + radiusInBaseUnit],
     range: [yMax, 0],
     clamp: true,
   })
 
-  /** data = [
-  * {'fieldname': 'statuscode1','value': total_for_status_1},
-  * {'fieldname': 'statuscode2', 'value': total_for_status_2},
-  * ...
-  * ]
-  **/
+  /**
+   * @function
+   * get maximum radius that fits height and width
+   */
+  const getMaxPieRadius = () => {
+    // const numPies = data.length
+    const actualRadius = radiusInPx
+    const maxRadiusY = Math.min(height / 2.5, actualRadius)
+    // const maxRadiusX = Math.min(width / (2 * numPies), actualRadius)
+    return maxRadiusY
+  }
+
+  /** fn **/
   const scatterShape = (d, i) => {
-    const diameter = xScale.bandwidth()
+    const diameter = getMaxPieRadius() * 2
 
     const leftShift = () => {
-      return xScale(iGetter(d)) + diameter / 2
+      if (data.length === 1) {
+        return (width - margin.left - margin.right) / 2
+      } else {
+        return xScale(iGetter(d)) + diameter / 2
+      }
     }
 
     const topShift = () => {
       // place center at total
-      return yScale(totals[i])
+      if (data.length === 1) {
+        return (height - margin.top - margin.bottom) / 2
+      } else {
+        return yScale(totals[i])
+      }
     }
 
     const left = leftShift()
     const top = topShift()
+    const showData = data.length === 1
 
     return (
       <Group key={`Pie ${i}`} top={top} left={left}>
@@ -119,6 +146,7 @@ const ScatterPie = ({
         <PieDonut
           key={`pie-${i}`}
           id={i}
+          showData={showData}
           width={diameter}
           height={diameter}
           data={d}
@@ -142,10 +170,10 @@ const ScatterPie = ({
             top={tooltipTop}
             left={tooltipLeft}
             style={{
-              color: 'teal'
+              color: 'teal',
             }}
           >
-            {`Sub-category ${kGetter(tooltipData.data)}: ${vGetter(tooltipData.data)}`}
+            {`${kGetter(tooltipData.data)}: ${vGetter(tooltipData.data)}`}
           </TooltipWithBounds>
         )}
       </React.Fragment>
@@ -153,10 +181,12 @@ const ScatterPie = ({
   }
 
   const renderAxes = () => {
+    const showAxisX = data.length > 1
+    const showAxisY = data.length > 1
     return (
       <Axes
-        showAxisX={true}
-        showAxisY={true}
+        showAxisX={showAxisX}
+        showAxisY={showAxisY}
         showGrid={false}
         xMax={xMax}
         yMax={yMax}
@@ -212,6 +242,8 @@ ScatterPie.propTypes = {
   yAxisLabel: PropTypes.string.isRequired,
   xAxisLabel: PropTypes.string.isRequired,
   shape: PropTypes.string.isRequired,
+  minWidth: PropTypes.number,
+  minHeight: PropTypes.number,
 }
 
 ScatterPie.defaultProps = {
@@ -220,6 +252,8 @@ ScatterPie.defaultProps = {
     top: 20,
     bottom: 50,
     right: 100,
-  }
+  },
+  minWidth: 500,
+  minHeight: 400,
 }
 export default withParentSize(withTooltip(ScatterPie))

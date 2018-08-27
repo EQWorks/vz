@@ -32,16 +32,16 @@ module.exports = {
       "error",
       "never",
     ],
-    "comma-dangle": [
-      "error",
-      "never",
-    ],
     "no-console": [
-      "warn"
+      "warn",
     ],
     "comma-dangle": [
       "error",
-      "only-multiline"
+      "always-multiline",
+    ],
+    "eol-last": [
+      "error",
+      "always",
     ],
   },
 }

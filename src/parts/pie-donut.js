@@ -51,7 +51,7 @@ const PieDonut = ({
         if (endAngle - startAngle - padAngle < .1) {
           return null
         }
-        if (showData || id === null) {
+        if (showData) {
           return (
             <text
               fill='black'
@@ -59,7 +59,7 @@ const PieDonut = ({
               x={x}
               y={y}
               style={{
-                fontSize: '0.9rem'
+                fontSize: '0.9rem',
               }}
             >
               {`${kGetter(arc.data)}: ${vGetter(arc.data)}`}

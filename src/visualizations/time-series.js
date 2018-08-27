@@ -208,7 +208,7 @@ const TimeSeries = ({
             top={tooltipTop}
             left={tooltipLeft + margin.left}
             style={{
-              color: color(tooltipData)
+              color: color(tooltipData),
             }}
           >
             {tooltipData[metrics]}
