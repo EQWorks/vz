@@ -60,12 +60,15 @@ const ScatterPie = ({
 
   // get radius in base unit
   const reverseYScale = scaleLinear({
-    domain: [yMax, 0],
+    domain: [0, yMax],
     range: domain,
     clamp: true
   })
 
-  const radiusInBaseUnit = reverseYScale(radiusInPx)
+  const bottom = reverseYScale(radiusInPx)
+  const top = reverseYScale(radiusInPx * 2.5)
+  const radiusInBaseUnit = top - bottom
+
 
   // avoid overflow on y axis
   const yScale = scaleLinear({
