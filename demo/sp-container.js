@@ -13,10 +13,10 @@ const categoryConfig = [
   {name: 'Age 18-24', keys: ['f5']},
   {name: 'Age 25-29', keys: ['f6', 'f7']},
   {name: 'Age 30-39', keys: ['f8', 'f9']},
-  {name: 'Age 40-49', keys: ['f10']},
-  {name: 'Age 50-59', keys: ['f11']},
-  {name: 'Age 60-69', keys: ['f12', 'f13']},
-  {name: 'Age 70+', keys: ['f14', 'f15', 'f16', 'f17']},
+  // {name: 'Age 40-49', keys: ['f10']},
+  // {name: 'Age 50-59', keys: ['f11']},
+  // {name: 'Age 60-69', keys: ['f12', 'f13']},
+  // {name: 'Age 70+', keys: ['f14', 'f15', 'f16', 'f17']},
 ]
 
 /**
@@ -45,6 +45,7 @@ class ScatterPieContainer extends React.Component {
     super(props)
     this.state = {
       shape: 'pie',
+      num: 'multi-pies'
     }
   }
 
@@ -52,7 +53,18 @@ class ScatterPieContainer extends React.Component {
     this.setState({ shape })
   }
 
+  handlePieScatter = (num) => () => {
+    this.setState({ num })
+  }
+
   render() {
+
+    const {
+      num,
+      shape
+    } = this.state
+
+    const data = num === 'multi-pies' ? scatterData : scatterData.slice(0, 1)
 
     return(
       <React.Fragment>
@@ -65,12 +77,20 @@ class ScatterPieContainer extends React.Component {
               </button>
             ))}
           </div>
+          <div style={{ display: 'inline-block', margin: '0 1rem' }}>
+            {['single-pie', 'multi-pies'].map(num => (
+              <button key={num} onClick={this.handlePieScatter(num)}>
+                {num}
+              </button>
+            ))}
+          </div>
+
         </div>
         <ScatterPie
-          data={scatterData}
+          data={data}
           width={1200}
           height={600}
-          shape={this.state.shape}
+          shape={shape}
           yAxisLabel='Population'
           xAxisLabel='Age Groups'
         />

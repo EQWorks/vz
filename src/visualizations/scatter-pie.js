@@ -69,34 +69,52 @@ const ScatterPie = ({
   const top = reverseYScale(radiusInPx * 2.5)
   const radiusInBaseUnit = top - bottom
 
-
-  // avoid overflow on y axis
+  /**
+   * scale for y axis
+   * @type {function}
+   */
   const yScale = scaleLinear({
     domain: [domain[0] - radiusInBaseUnit, domain[1] + radiusInBaseUnit],
     range: [yMax, 0],
     clamp: true,
   })
 
-  /** data = [
-  * {'fieldname': 'statuscode1','value': total_for_status_1},
-  * {'fieldname': 'statuscode2', 'value': total_for_status_2},
-  * ...
-  * ]
-  **/
+  /**
+   * @function
+   * get maximum radius that fits height and width
+   */
+  const getMaxPieRadius = () => {
+    // const numPies = data.length
+    const actualRadius = radiusInPx
+    const maxRadiusY = Math.min(height / 2.5, actualRadius)
+    // const maxRadiusX = Math.min(width / (2 * numPies), actualRadius)
+    return maxRadiusY
+  }
+
+  /** fn **/
   const scatterShape = (d, i) => {
-    const diameter = xScale.bandwidth()
+    const diameter = getMaxPieRadius() * 2
 
     const leftShift = () => {
-      return xScale(iGetter(d)) + diameter / 2
+      if (data.length === 1) {
+        return (width - margin.left - margin.right) / 2
+      } else {
+        return xScale(iGetter(d)) + diameter / 2
+      }
     }
 
     const topShift = () => {
       // place center at total
-      return yScale(totals[i])
+      if (data.length === 1) {
+        return (height - margin.top - margin.bottom) / 2
+      } else {
+        return yScale(totals[i])
+      }
     }
 
     const left = leftShift()
     const top = topShift()
+    const showData = data.length === 1
 
     return (
       <Group key={`Pie ${i}`} top={top} left={left}>
@@ -119,6 +137,7 @@ const ScatterPie = ({
         <PieDonut
           key={`pie-${i}`}
           id={i}
+          showData={showData}
           width={diameter}
           height={diameter}
           data={d}
@@ -153,10 +172,12 @@ const ScatterPie = ({
   }
 
   const renderAxes = () => {
+    const showAxisX = data.length > 1
+    const showAxisY = data.length > 1
     return (
       <Axes
-        showAxisX={true}
-        showAxisY={true}
+        showAxisX={showAxisX}
+        showAxisY={showAxisY}
         showGrid={false}
         xMax={xMax}
         yMax={yMax}

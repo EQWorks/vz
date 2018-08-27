@@ -51,7 +51,7 @@ const PieDonut = ({
         if (endAngle - startAngle - padAngle < .1) {
           return null
         }
-        if (showData || id === null) {
+        if (showData) {
           return (
             <text
               fill='black'
