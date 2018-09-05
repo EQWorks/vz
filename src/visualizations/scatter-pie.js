@@ -47,7 +47,6 @@ const ScatterPie = ({
   const xMax = width - margin.left - margin.right
   const yMax = height - margin.bottom - margin.top
 
-<<<<<<< HEAD
   if (width < 10) return (
     <NoSpace
       width={width}
@@ -55,8 +54,6 @@ const ScatterPie = ({
     />
   )
 
-=======
->>>>>>> feature/breakdown
   const kGetter = (d) => parseInt(d.fieldName)
   const vGetter = (d) => d.value
   const iGetter = (d) => d[0].name
@@ -262,10 +259,7 @@ ScatterPie.defaultProps = {
     bottom: 50,
     right: 100,
   },
-<<<<<<< HEAD
-=======
   minWidth: 500,
   minHeight: 400,
->>>>>>> feature/breakdown
 }
 export default withParentSize(withTooltip(ScatterPie))
