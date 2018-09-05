@@ -12,6 +12,8 @@ const Axes = ({
   yMax,
   left,
   bottom,
+  axisBottomClassName,
+  axisLeftClassName,
   // right,
 }) => (
   <React.Fragment>
@@ -31,6 +33,7 @@ const Axes = ({
       scale={left.scale}
       numTicks={left.numTicks}
       label={left.label}
+      axisClassName={axisLeftClassName}
     />}
     {showAxisX && <AxisBottom
       top={bottom.top}
@@ -38,6 +41,7 @@ const Axes = ({
       scale={bottom.scale}
       numTicks={bottom.numTicks}
       label={bottom.label}
+      axisClassName={axisBottomClassName}
     />}
   </React.Fragment>
 )

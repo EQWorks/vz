@@ -4,7 +4,7 @@ import {
   Scatter,
   Axes,
   PieDonut,
-  // Markers,
+  NoSpace,
 } from '../parts'
 import { withParentSize } from '@vx/responsive'
 import { withTooltip, TooltipWithBounds } from '@vx/tooltip'
@@ -37,7 +37,12 @@ const ScatterPie = ({
   const xMax = width - margin.left - margin.right
   const yMax = height - margin.bottom - margin.top
 
-  if (width < 10) return null
+  if (width < 10) return (
+     <NoSpace
+        width={width}
+        height={height}
+      />
+  )
 
   const kGetter = (d) => parseInt(d.fieldName)
   const vGetter = (d) => d.value
