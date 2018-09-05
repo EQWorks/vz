@@ -32,11 +32,22 @@ const ScatterPie = ({
   yAxisLabel,
   xAxisLabel,
   shape,
+  minWidth,
+  minHeight,
 }) => {
+  if (width < minWidth || height < minHeight) {
+    return (
+      <NoSpace
+        width={width}
+        height={height}
+      />
+    )
+  }
 
   const xMax = width - margin.left - margin.right
   const yMax = height - margin.bottom - margin.top
 
+<<<<<<< HEAD
   if (width < 10) return (
     <NoSpace
       width={width}
@@ -44,6 +55,8 @@ const ScatterPie = ({
     />
   )
 
+=======
+>>>>>>> feature/breakdown
   const kGetter = (d) => parseInt(d.fieldName)
   const vGetter = (d) => d.value
   const iGetter = (d) => d[0].name
@@ -169,7 +182,7 @@ const ScatterPie = ({
               color: 'teal',
             }}
           >
-            {`Sub-category ${kGetter(tooltipData.data)}: ${vGetter(tooltipData.data)}`}
+            {`${kGetter(tooltipData.data)}: ${vGetter(tooltipData.data)}`}
           </TooltipWithBounds>
         )}
       </React.Fragment>
@@ -238,6 +251,8 @@ ScatterPie.propTypes = {
   yAxisLabel: PropTypes.string.isRequired,
   xAxisLabel: PropTypes.string.isRequired,
   shape: PropTypes.string.isRequired,
+  minWidth: PropTypes.number,
+  minHeight: PropTypes.number,
 }
 
 ScatterPie.defaultProps = {
@@ -247,5 +262,10 @@ ScatterPie.defaultProps = {
     bottom: 50,
     right: 100,
   },
+<<<<<<< HEAD
+=======
+  minWidth: 500,
+  minHeight: 400,
+>>>>>>> feature/breakdown
 }
 export default withParentSize(withTooltip(ScatterPie))
