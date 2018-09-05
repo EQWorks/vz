@@ -38,10 +38,10 @@ const ScatterPie = ({
   const yMax = height - margin.bottom - margin.top
 
   if (width < 10) return (
-     <NoSpace
-        width={width}
-        height={height}
-      />
+    <NoSpace
+      width={width}
+      height={height}
+    />
   )
 
   const kGetter = (d) => parseInt(d.fieldName)
@@ -57,7 +57,7 @@ const ScatterPie = ({
     domain: data.map(iGetter),
     range: [0, xMax],
     paddingInner: paddingInner,
-    paddingOuter: paddingOuter
+    paddingOuter: paddingOuter,
   })
 
   const domain = extent(totals)
@@ -67,7 +67,7 @@ const ScatterPie = ({
   const reverseYScale = scaleLinear({
     domain: [0, yMax],
     range: domain,
-    clamp: true
+    clamp: true,
   })
 
   const bottom = reverseYScale(radiusInPx)
@@ -166,7 +166,7 @@ const ScatterPie = ({
             top={tooltipTop}
             left={tooltipLeft}
             style={{
-              color: 'teal'
+              color: 'teal',
             }}
           >
             {`Sub-category ${kGetter(tooltipData.data)}: ${vGetter(tooltipData.data)}`}
@@ -246,6 +246,6 @@ ScatterPie.defaultProps = {
     top: 20,
     bottom: 50,
     right: 100,
-  }
+  },
 }
 export default withParentSize(withTooltip(ScatterPie))

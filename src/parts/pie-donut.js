@@ -59,7 +59,7 @@ const PieDonut = ({
               x={x}
               y={y}
               style={{
-                fontSize: '0.9rem'
+                fontSize: '0.9rem',
               }}
             >
               {`${kGetter(arc.data)}: ${vGetter(arc.data)}`}

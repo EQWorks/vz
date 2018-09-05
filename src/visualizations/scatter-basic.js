@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import {
   Scatter,
   Axes,
-  PieDonut,
+  // PieDonut,
   Markers,
   HotZone,
 } from '../parts'
@@ -15,7 +15,8 @@ import { numTicksForHeight, numTicksForWidth } from '../utils/responsive'
 import { scaleLinear, scaleBand } from '@vx/scale'
 import { extent } from 'd3-array'
 import { Group } from '@vx/group'
-import { GlyphDot } from '@vx/glyph'
+// import { GlyphDot } from '@vx/glyph'
+import { localPoint } from '@vx/event'
 
 const ScatterBasic = ({
   // withParentSize
@@ -45,7 +46,7 @@ const ScatterBasic = ({
   const xScale = scaleBand({
     domain: data.map(kGetter),
     range: [0, xMax],
-    clamp: true
+    clamp: true,
   })
 
   const yScale = scaleLinear({
@@ -78,7 +79,8 @@ const ScatterBasic = ({
     )
   }
 
-  const scatterShape = (d, i) => {
+  // eslint-disable-next-line
+  const scatterShape = (d, _) => {
     const bw = xScale.bandwidth() / 2
     const left = xScale(kGetter(d)) + bw
     const top = yScale(vGetter(d))
@@ -97,31 +99,80 @@ const ScatterBasic = ({
     )
   )
 
-  const renderTooltip = () => {
-    console.log('123')
-    console.log(tooltipData)
+  const renderToolTip = () => (
+    tooltipOpen && tooltipData && (
+      <TooltipWithBounds
+        left={tooltipLeft}
+        top={margin.top}>
+        {kGetter(tooltipData)}: {vGetter(tooltipData)}
+      </TooltipWithBounds>
+    ))
+
+  const handleTooltip = ({ data, event }) => {
+    const point = localPoint(event)
+    const step = xScale.step()
+    const index = Math.round((point.x - margin.left) / step)
+
+    if (index < data.length && index >= 0) {
+      const pointData = data[index]
+      const bw = xScale.bandwidth() / 2
+      const tip = {
+        tooltipData: pointData,
+        tooltipLeft: xScale(kGetter(pointData)) + bw,
+        tooltipTop: yScale(vGetter(pointData)),
+      }
+      showTooltip(tip)
+    }
   }
 
-  const renderToolTipTrigger = () => {
-    console.log('Tool tip render clicked!')
-    showTooltip()
-  }
+  const renderTooltipTrigger = () => (
+    <HotZone
+      width={xMax}
+      height={yMax}
+      data={data}
+      onMouseMove={(data) => (event) => handleTooltip({ data, event })}
+      onMouseLeave={() => () => { hideTooltip() }}
+    />
+  )
 
   return (
-     <svg width={width} height={height}>
-      <Group
-        left={margin.left}
-        bottom={margin.bottom}
-        top={margin.top}
-        right={margin.right}>
-        <Scatter scatterShape={scatterShape} data={data}/>
-        {renderMarkers()}
-        {renderAxes()}
-      </Group>
-    </svg>
+    <React.Fragment>
+      <svg width={width} height={height}>
+        <Group
+          left={margin.left}
+          bottom={margin.bottom}
+          top={margin.top}
+          right={margin.right}>
+          {renderMarkers()}
+          {renderAxes()}
+          {renderTooltipTrigger()}
+          <Scatter scatterShape={scatterShape} data={data}/>
+        </Group>
+      </svg>
+      {renderToolTip()}
+    </React.Fragment>
   )
 }
 
+ScatterBasic.propTypes = {
+  // withParentSize
+  parentWidth: PropTypes.number.isRequired,
+  parentHeight: PropTypes.number.isRequired,
+  // withTooltip
+  showTooltip: PropTypes.func.isRequired,
+  hideTooltip: PropTypes.func.isRequired,
+  tooltipOpen: PropTypes.bool.isRequired,
+  tooltipTop: PropTypes.number,
+  tooltipLeft: PropTypes.number,
+  tooltipData: PropTypes.any,
+  // required
+  data: PropTypes.array.isRequired,
+  drawAScatter: PropTypes.func.isRequired,
+  yAxisLabel: PropTypes.string.isRequired,
+  xAxisLabel: PropTypes.string.isRequired,
+  // optional
+  margin: PropTypes.object,
+}
 
 ScatterBasic.defaultProps = {
   margin: {
@@ -129,7 +180,7 @@ ScatterBasic.defaultProps = {
     top: 20,
     bottom: 50,
     right: 100,
-  }
+  },
 }
 
 export default withParentSize(withTooltip(ScatterBasic))
