@@ -4,6 +4,7 @@ import {
   Scatter,
   Axes,
   PieDonut,
+  NoSpace,
   // Markers,
 } from '../parts'
 import { withParentSize } from '@vx/responsive'
@@ -32,12 +33,20 @@ const ScatterPie = ({
   yAxisLabel,
   xAxisLabel,
   shape,
+  minWidth,
+  minHeight,
 }) => {
+  if (width < minWidth || height < minHeight) {
+    return (
+      <NoSpace
+        width={width}
+        height={height}
+      />
+    )
+  }
 
   const xMax = width - margin.left - margin.right
   const yMax = height - margin.bottom - margin.top
-
-  if (width < 10) return null
 
   const kGetter = (d) => parseInt(d.fieldName)
   const vGetter = (d) => d.value
@@ -52,7 +61,7 @@ const ScatterPie = ({
     domain: data.map(iGetter),
     range: [0, xMax],
     paddingInner: paddingInner,
-    paddingOuter: paddingOuter
+    paddingOuter: paddingOuter,
   })
 
   const domain = extent(totals)
@@ -62,7 +71,7 @@ const ScatterPie = ({
   const reverseYScale = scaleLinear({
     domain: [0, yMax],
     range: domain,
-    clamp: true
+    clamp: true,
   })
 
   const bottom = reverseYScale(radiusInPx)
@@ -161,10 +170,10 @@ const ScatterPie = ({
             top={tooltipTop}
             left={tooltipLeft}
             style={{
-              color: 'teal'
+              color: 'teal',
             }}
           >
-            {`Sub-category ${kGetter(tooltipData.data)}: ${vGetter(tooltipData.data)}`}
+            {`${kGetter(tooltipData.data)}: ${vGetter(tooltipData.data)}`}
           </TooltipWithBounds>
         )}
       </React.Fragment>
@@ -233,6 +242,8 @@ ScatterPie.propTypes = {
   yAxisLabel: PropTypes.string.isRequired,
   xAxisLabel: PropTypes.string.isRequired,
   shape: PropTypes.string.isRequired,
+  minWidth: PropTypes.number,
+  minHeight: PropTypes.number,
 }
 
 ScatterPie.defaultProps = {
@@ -241,6 +252,8 @@ ScatterPie.defaultProps = {
     top: 20,
     bottom: 50,
     right: 100,
-  }
+  },
+  minWidth: 500,
+  minHeight: 400,
 }
 export default withParentSize(withTooltip(ScatterPie))

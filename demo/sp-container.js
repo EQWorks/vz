@@ -45,7 +45,7 @@ class ScatterPieContainer extends React.Component {
     super(props)
     this.state = {
       shape: 'pie',
-      num: 'multi-pies'
+      num: 'multi-pies',
     }
   }
 
@@ -61,7 +61,7 @@ class ScatterPieContainer extends React.Component {
 
     const {
       num,
-      shape
+      shape,
     } = this.state
 
     const data = num === 'multi-pies' ? scatterData : scatterData.slice(0, 1)

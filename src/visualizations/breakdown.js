@@ -100,7 +100,7 @@ const Breakdown = ({
             top={tooltipTop}
             left={tooltipLeft}
             style={{
-              color: 'teal'
+              color: 'teal',
             }}
           >
             {`${kGetter(tooltipData.data)}: ${vGetter(tooltipData.data)}`}

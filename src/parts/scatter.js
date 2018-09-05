@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 const Scatter = ({
   scatterShape,
-  data
+  data,
 }) => {
   return (
     <React.Fragment>

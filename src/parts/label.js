@@ -9,7 +9,7 @@ const Label = ({ x, y, children }) => {
       x={x}
       y={y}
       style={{
-        fontSize: '0.9rem'
+        fontSize: '0.9rem',
       }}
     >
       {children}
