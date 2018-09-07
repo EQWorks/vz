@@ -47,13 +47,6 @@ const ScatterPie = ({
   const xMax = width - margin.left - margin.right
   const yMax = height - margin.bottom - margin.top
 
-  if (width < 10) return (
-    <NoSpace
-      width={width}
-      height={height}
-    />
-  )
-
   const kGetter = (d) => parseInt(d.fieldName)
   const vGetter = (d) => d.value
   const iGetter = (d) => d[0].name
