@@ -39,8 +39,9 @@ const Breakdown = ({
     bottom: 50,
   },
   shape='donut',
-  minWidth=400,
+  minWidth=500,
 }) => {
+
   if (width < minWidth || height < minWidth) {
     return (
       <NoSpace
@@ -60,7 +61,7 @@ const Breakdown = ({
 
   const renderPieDonut = () => {
     return (
-      <Group top={height / 2 - margin.top} left={width / 2}>
+      <Group top={margin.top + height / 2} left={width / 2}>
         {tooltipOpen && (
           <g>
             <PatternLines
@@ -78,8 +79,8 @@ const Breakdown = ({
           </g>
         )}
         <PieDonut
-          width={width}
-          height={height}
+          width={xMax}
+          height={yMax}
           data={data}
           kGetter={kGetter}
           vGetter={vGetter}
@@ -99,7 +100,7 @@ const Breakdown = ({
             top={tooltipTop}
             left={tooltipLeft}
             style={{
-              color: 'teal'
+              color: 'teal',
             }}
           >
             {`${kGetter(tooltipData.data)}: ${vGetter(tooltipData.data)}`}
@@ -161,7 +162,7 @@ Breakdown.defaultProps = {
   },
   shape: 'donut',
   // snapTooltip: true,
-  minWidth: 600,
+  minWidth: 500,
 }
 
 export default withParentSize(withTooltip(Breakdown))
