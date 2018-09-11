@@ -175,15 +175,18 @@ const TimeSeries = ({
     showTooltip(tip)
   }
 
-  const renderTooltipTrigger = () => (
-    <HotZone
-      width={xMax}
-      height={yMax}
-      data={fillZero()}
-      onMouseMove={(data) => (event) => handleTooltip({ data, event })}
-      onMouseLeave={() => () => { hideTooltip() }}
-    />
-  )
+  const renderTooltipTrigger = () => {
+    return (
+      <HotZone
+        shape='bar'
+        width={xMax}
+        height={yMax}
+        data={fillZero()}
+        onMouseMove={(data) => (event) => handleTooltip({ data, event })}
+        onMouseLeave={() => () => { hideTooltip() }}
+      />
+    )
+  }
 
   const renderTooltip = () => {
     let timeFormat = 'ddd, LL'

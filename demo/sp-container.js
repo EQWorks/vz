@@ -13,10 +13,10 @@ const categoryConfig = [
   {name: 'Age 18-24', keys: ['f5']},
   {name: 'Age 25-29', keys: ['f6', 'f7']},
   {name: 'Age 30-39', keys: ['f8', 'f9']},
-  // {name: 'Age 40-49', keys: ['f10']},
-  // {name: 'Age 50-59', keys: ['f11']},
-  // {name: 'Age 60-69', keys: ['f12', 'f13']},
-  // {name: 'Age 70+', keys: ['f14', 'f15', 'f16', 'f17']},
+  {name: 'Age 40-49', keys: ['f10']},
+  {name: 'Age 50-59', keys: ['f11']},
+  {name: 'Age 60-69', keys: ['f12', 'f13']},
+  {name: 'Age 70+', keys: ['f14', 'f15', 'f16', 'f17']},
 ]
 
 /**
@@ -68,32 +68,54 @@ class ScatterPieContainer extends React.Component {
 
     return(
       <React.Fragment>
-        <div style={{ textAlign: 'center' }}>
-          <h3>Scatter Pie</h3>
-          <div style={{ display: 'inline-block', margin: '0 1rem' }}>
-            {['donut', 'pie'].map(shape => (
-              <button key={shape} onClick={this.handleShape(shape)}>
-                {shape}
-              </button>
-            ))}
+        <div style={{width: '370px', borderStyle: 'solid', borderColor: '#C8C8C8'}} >
+          <div style={{ textAlign: 'center' }}>
+            <h3>Scatter Pie (demo card version)</h3>
           </div>
-          <div style={{ display: 'inline-block', margin: '0 1rem' }}>
-            {['single-pie', 'multi-pies'].map(num => (
-              <button key={num} onClick={this.handlePieScatter(num)}>
-                {num}
-              </button>
-            ))}
+          <div>
+            <div>Total Population:</div>
+            <div>Age Group</div>
           </div>
-
+          <div style={{height: '400px'}}>
+            <ScatterPie
+              data={scatterData.slice(0, 1)}
+              shape={shape}
+              hoverable={true}
+              margin={{
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0,
+              }}
+            />
+          </div>
+          <div style={{textAlign: 'center'}}>
+            <div style={{ display: 'inline-block', margin: '0 1rem' }}>
+              {['donut', 'pie'].map(shape => (
+                <button key={shape} onClick={this.handleShape(shape)}>
+                  {shape}
+                </button>
+              ))}
+            </div>
+            <div style={{ display: 'inline-block', margin: '0 1rem' }}>
+              {['single-pie', 'multi-pies'].map(num => (
+                <button key={num} onClick={this.handlePieScatter(num)}>
+                  {num}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div style={{marginTop: '10px'}}>population distribution of age groups</div>
+          <div style={{height: '450px'}}>
+            <ScatterPie
+              data={data}
+              shape={shape}
+              yAxisLabel='Population'
+              xAxisLabel='Age Groups'
+              hoverable={false}
+            />
+          </div>
         </div>
-        <ScatterPie
-          data={data}
-          width={1200}
-          height={600}
-          shape={shape}
-          yAxisLabel='Population'
-          xAxisLabel='Age Groups'
-        />
       </React.Fragment>
     )
   }

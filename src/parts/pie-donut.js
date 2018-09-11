@@ -2,7 +2,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import { Pie } from '@vx/shape'
-import { localPoint } from '@vx/event'
 
 const PieDonut = ({
   // required
@@ -11,12 +10,9 @@ const PieDonut = ({
   data,
   kGetter,
   vGetter,
-  showTooltip,
-  hideTooltip,
   // optional
   hollow,
   showData,
-  id,
   // snapTooltip=true,
 }) => {
   const radius = Math.min(width, height) / 2
@@ -67,25 +63,6 @@ const PieDonut = ({
           )
         }
       }}
-      onMouseMove={(arc) => (event) => {
-        const point = localPoint(event)
-
-        showTooltip({
-          tooltipData: {
-            ...arc,
-            // TODO: hack to resolve 0 startAngle issue
-            startAngle: arc.startAngle ? arc.startAngle : 0.000000000001,
-
-            innerRadius: innerRadius ? innerRadius : 0.000000000001,
-
-            id,
-            outerRadius,
-          },
-          tooltipLeft: point.x,
-          tooltipTop: point.y,
-        })
-      }}
-      onMouseLeave={() => () => { hideTooltip() }}
     />
   )
 }
@@ -97,18 +74,14 @@ PieDonut.propTypes = {
   data: PropTypes.array.isRequired,
   kGetter: PropTypes.func.isRequired,
   vGetter: PropTypes.func.isRequired,
-  showTooltip: PropTypes.func.isRequired,
-  hideTooltip: PropTypes.func.isRequired,
   // optional
   hollow: PropTypes.bool,
-  id: PropTypes.number,
   showData: PropTypes.bool,
   // snapTooltip: PropTypes.bool,
 }
 
 PieDonut.defaultProps = {
   hollow: true,
-  id: null,
   showData: false,
   // snapTooltip: true,
 }

@@ -5,6 +5,7 @@ import {
   Axes,
   PieDonut,
   NoSpace,
+  HotZone,
   // Markers,
 } from '../parts'
 import { withParentSize } from '@vx/responsive'
@@ -16,6 +17,7 @@ import { extent } from 'd3-array'
 import { Group } from '@vx/group'
 import { Arc } from '@vx/shape'
 import { PatternLines } from '@vx/pattern'
+import { localPoint } from '@vx/event'
 
 const ScatterPie = ({
   // withParentSize
@@ -35,6 +37,7 @@ const ScatterPie = ({
   shape,
   minWidth,
   minHeight,
+  hoverable,
 }) => {
   if (width < minWidth || height < minHeight) {
     return (
@@ -100,34 +103,35 @@ const ScatterPie = ({
     return maxRadiusY
   }
 
+  const diameter = getMaxPieRadius() * 2
+  const hollow = shape === 'donut'
+
   /** fn **/
+  const leftShift = (d) => {
+    if (data.length === 1) {
+      return (width - margin.left - margin.right) / 2
+    } else {
+      return xScale(iGetter(d)) + diameter / 2
+    }
+  }
+
+  const topShift = (i) => {
+    // place center at total
+    if (data.length === 1) {
+      return (height - margin.top - margin.bottom) / 2
+    } else {
+      return yScale(totals[i])
+    }
+  }
+
   const scatterShape = (d, i) => {
-    const diameter = getMaxPieRadius() * 2
-
-    const leftShift = () => {
-      if (data.length === 1) {
-        return (width - margin.left - margin.right) / 2
-      } else {
-        return xScale(iGetter(d)) + diameter / 2
-      }
-    }
-
-    const topShift = () => {
-      // place center at total
-      if (data.length === 1) {
-        return (height - margin.top - margin.bottom) / 2
-      } else {
-        return yScale(totals[i])
-      }
-    }
-
-    const left = leftShift()
-    const top = topShift()
+    const left = leftShift(d)
+    const top = topShift(i)
     const showData = data.length === 1
 
     return (
       <Group key={`Pie ${i}`} top={top} left={left}>
-        {tooltipOpen && tooltipData.id === i && (
+        {tooltipOpen && tooltipData.id === i && hoverable && (
           <g>
             <PatternLines
               id='lines'
@@ -145,7 +149,6 @@ const ScatterPie = ({
         )}
         <PieDonut
           key={`pie-${i}`}
-          id={i}
           showData={showData}
           width={diameter}
           height={diameter}
@@ -156,11 +159,45 @@ const ScatterPie = ({
           yScale={yScale}
           showTooltip={showTooltip}
           hideTooltip={hideTooltip}
-          hollow={shape === 'donut'}
+          hollow={hollow}
         />
       </Group>
     )
   }
+
+  const renderTooltipTrigger = () => {
+    return data.map((d, i) => (
+      <HotZone
+        key={`HotZonePie-${i}`}
+        shape='pie'
+        vGetter={vGetter}
+        left={leftShift(d)}
+        top={topShift(i)}
+        data={d}
+        diameter={diameter}
+        hollow={hollow}
+        onMouseMove={(arc) => (event) => {
+          const point = localPoint(event)
+
+          showTooltip({
+            tooltipData: {
+              ...arc,
+              // TODO: hack to resolve 0 startAngle issue
+              startAngle: arc.startAngle ? arc.startAngle : 0.000000000001,
+
+              innerRadius: hollow ? diameter / 2 - diameter / 2.74 : 0.000000000001,
+
+              id: i,
+              outerRadius: diameter / 2,
+            },
+            tooltipLeft: point.x,
+            tooltipTop: point.y,
+          })
+        }}
+        onMouseLeave={() => () => { hideTooltip() }}
+      />
+    )
+    )}
 
   const renderTooltip = () => {
     return tooltipOpen && (
@@ -218,6 +255,7 @@ const ScatterPie = ({
           right={margin.right}>
           <Scatter scatterShape={scatterShape} data={data}/>
           {renderAxes()}
+          {hoverable && renderTooltipTrigger()}
         </Group>
       </svg>
       {renderTooltip()}
@@ -239,21 +277,24 @@ ScatterPie.propTypes = {
   // ScatterPie
   data: PropTypes.array.isRequired,
   margin: PropTypes.object,
-  yAxisLabel: PropTypes.string.isRequired,
-  xAxisLabel: PropTypes.string.isRequired,
+  yAxisLabel: PropTypes.string,
+  xAxisLabel: PropTypes.string,
   shape: PropTypes.string.isRequired,
   minWidth: PropTypes.number,
   minHeight: PropTypes.number,
+  hoverable: PropTypes.bool,
 }
 
 ScatterPie.defaultProps = {
   margin: {
-    left: 100,
-    top: 20,
-    bottom: 50,
-    right: 100,
+    left: 0,
+    top: 10,
+    bottom: 45,
+    right: 10,
   },
-  minWidth: 500,
-  minHeight: 400,
+  minWidth: 100,
+  minHeight: 200,
+  yAxisLabel: null,
+  xAxisLabel: null,
 }
 export default withParentSize(withTooltip(ScatterPie))
