@@ -8,6 +8,7 @@ const HotZone = ({
   data,
   onMouseMove,
   onMouseLeave,
+  onClick,
   //pie props
   diameter,
   hollow,
@@ -44,6 +45,7 @@ const HotZone = ({
         fill='transparent'
         onMouseMove={onMouseMove}
         onMouseLeave={onMouseLeave}
+        onClick={onClick}
       />
     )}
 }

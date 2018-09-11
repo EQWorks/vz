@@ -30,6 +30,7 @@ const Axes = ({
       left={left.left}
       scale={left.scale}
       numTicks={left.numTicks}
+      hideTicks={left.hideTicks}
       label={left.label}
     />}
     {showAxisX && <AxisBottom
@@ -37,6 +38,7 @@ const Axes = ({
       left={bottom.left}
       scale={bottom.scale}
       numTicks={bottom.numTicks}
+      hideTicks={bottom.hideTicks}
       label={bottom.label}
     />}
   </React.Fragment>

@@ -1,6 +1,7 @@
 import React from 'react'
 import MultiDimData from './mock-data/multi-dim'
 import { ScatterPie } from '../src/visualizations'
+import _ from 'lodash'
 
 /**
  * Configure which categories should be aggregated
@@ -46,6 +47,11 @@ class ScatterPieContainer extends React.Component {
     this.state = {
       shape: 'pie',
       num: 'multi-pies',
+      pie: {
+        name: categoryConfig[0].name,
+        data: scatterData.slice(0,1),
+        total: scatterData[0].reduce((acc, { value }) => acc + value, 0),
+      },
     }
   }
 
@@ -57,28 +63,57 @@ class ScatterPieContainer extends React.Component {
     this.setState({ num })
   }
 
+  handlePieClick = (pieEvent) => {
+    const {
+      data: {
+        name: categoryName,
+      },
+    } = pieEvent
+
+    const idx = _.findIndex(categoryConfig, ({name}) => name === categoryName)
+    const pieData = scatterData.slice(idx, idx + 1)
+    const total = pieData[0].reduce((acc, { value }) => acc + value, 0)
+
+    this.setState({
+      pie: {
+        data: pieData,
+        name: categoryName,
+        total,
+      },
+    })
+  }
+
   render() {
 
     const {
       num,
       shape,
+      pie: {
+        name,
+        data: pieData,
+        total,
+      },
     } = this.state
 
     const data = num === 'multi-pies' ? scatterData : scatterData.slice(0, 1)
 
     return(
       <React.Fragment>
-        <div style={{width: '370px', borderStyle: 'solid', borderColor: '#C8C8C8'}} >
+        <div style={{
+          width: '370px',
+          borderStyle: 'solid',
+          borderColor: '#C8C8C8',
+        }} >
           <div style={{ textAlign: 'center' }}>
             <h3>Scatter Pie (demo card version)</h3>
           </div>
           <div>
-            <div>Total Population:</div>
-            <div>Age Group</div>
+            <div>Total Population: {total}</div>
+            <div>Age Group: {name}</div>
           </div>
           <div style={{height: '400px'}}>
             <ScatterPie
-              data={scatterData.slice(0, 1)}
+              data={pieData}
               shape={shape}
               hoverable={true}
               margin={{
@@ -110,9 +145,10 @@ class ScatterPieContainer extends React.Component {
             <ScatterPie
               data={data}
               shape={shape}
-              yAxisLabel='Population'
               xAxisLabel='Age Groups'
+              xAxisTick={true}
               hoverable={false}
+              onPieClick={this.handlePieClick}
             />
           </div>
         </div>

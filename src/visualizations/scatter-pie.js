@@ -38,6 +38,9 @@ const ScatterPie = ({
   minWidth,
   minHeight,
   hoverable,
+  onPieClick,
+  xAxisTick,
+  yAxisTick,
 }) => {
   if (width < minWidth || height < minHeight) {
     return (
@@ -62,6 +65,13 @@ const ScatterPie = ({
 
   const xScale = scaleBand({
     domain: data.map(iGetter),
+    range: [0, xMax],
+    paddingInner: paddingInner,
+    paddingOuter: paddingOuter,
+  })
+
+  const xScaleDisplay = scaleBand({
+    domain: data.filter((_, i) => i % 2 === 0).map(iGetter),
     range: [0, xMax],
     paddingInner: paddingInner,
     paddingOuter: paddingOuter,
@@ -176,9 +186,13 @@ const ScatterPie = ({
         data={d}
         diameter={diameter}
         hollow={hollow}
+        onClick={(event) => () => {
+          if (onPieClick) {
+            onPieClick(event)
+          }
+        }}
         onMouseMove={(arc) => (event) => {
           const point = localPoint(event)
-
           showTooltip({
             tooltipData: {
               ...arc,
@@ -231,13 +245,15 @@ const ScatterPie = ({
           top: 0,
           left: 0,
           scale: yScale,
+          hideTicks: yAxisTick,
           numTicks: numTicksForHeight(height),
           label: yAxisLabel,
         }}
         bottom={{
           top: yMax,
           left: 0,
-          scale: xScale,
+          scale: xScaleDisplay,
+          hideTicks: xAxisTick,
           numTicks: numTicksForWidth(width),
           label: xAxisLabel,
         }}
@@ -255,7 +271,7 @@ const ScatterPie = ({
           right={margin.right}>
           <Scatter scatterShape={scatterShape} data={data}/>
           {renderAxes()}
-          {hoverable && renderTooltipTrigger()}
+          {renderTooltipTrigger()}
         </Group>
       </svg>
       {renderTooltip()}
@@ -279,10 +295,13 @@ ScatterPie.propTypes = {
   margin: PropTypes.object,
   yAxisLabel: PropTypes.string,
   xAxisLabel: PropTypes.string,
+  xAxisTick: PropTypes.bool,
+  yAxisTick: PropTypes.bool,
   shape: PropTypes.string.isRequired,
   minWidth: PropTypes.number,
   minHeight: PropTypes.number,
   hoverable: PropTypes.bool,
+  onPieClick: PropTypes.func.isRequired,
 }
 
 ScatterPie.defaultProps = {
@@ -296,5 +315,7 @@ ScatterPie.defaultProps = {
   minHeight: 200,
   yAxisLabel: null,
   xAxisLabel: null,
+  xAxisTick: true,
+  yAxisTick: true,
 }
 export default withParentSize(withTooltip(ScatterPie))
